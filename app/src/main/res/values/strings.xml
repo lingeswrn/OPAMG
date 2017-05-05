@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OPAMG</string>
+
+    <!--LOGIN -->
+    <string name="login">Login</string>
+    <string name="forgetPassword">Forgot your password?</string>
+    <string name="signIn">Sign In</string>
+</resources>
