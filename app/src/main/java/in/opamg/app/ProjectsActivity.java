@@ -77,7 +77,6 @@ public class ProjectsActivity extends AppCompatActivity {
                     Intent i = new Intent(ProjectsActivity.this, AddProject.class);
                     startActivity(i);
                 }else {
-                    getOfflineProjects();
                     Toast.makeText(ProjectsActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
                 }
             }
@@ -88,16 +87,24 @@ public class ProjectsActivity extends AppCompatActivity {
             Log.e("Online", String.valueOf(isOnline()));
             getProjectList();
         }else {
+            getOfflineProjects();
             Log.e("Offline", String.valueOf(isOnline()));
             Toast.makeText(ProjectsActivity.this, "No Internet", Toast.LENGTH_LONG).show();
         }
 
     }
 
-    private void getOfflineProjects() {
+    public void getOfflineProjects() {
         Log.d("Reading: ", "Reading all contacts..");
         List<Project> projects = db.getAllProjects();
         Log.d("Name: ", String.valueOf(projects));
+
+        Gson gson = new Gson();
+        String json = projects.toString();
+        taskList = gson.fromJson(json, new TypeToken<List<ProjectGetSet>>(){}.getType());
+        Log.e("taskList",""+taskList);
+        AdapterAddressList = new ProjectListing(taskList);
+        listProject.setAdapter(AdapterAddressList);
         for (Project cn : projects) {
             String log = "Id: "+cn.get_id()+" ,from: " + cn.get_from() + " ,to: " + cn.get_to()
                     + " ,project: " + cn.get_project_name()+ " ,company: " + cn.get_company_name()
@@ -156,16 +163,22 @@ public class ProjectsActivity extends AppCompatActivity {
                                     {
                                         JSONObject object = result.getJSONObject(i);
                                         Log.e("datat", String.valueOf(object));
-                                        //db.addProject(new Project(object.getString("id"), object.getString("_from"),object.getString("_to"), object.getString("project"),object.getString("company_name"), object.getString("work_order_number"),object.getString("scope_work"), object.getString("remarks"),object.getString("user_id"), object.getString("status"),object.getString("created_date"), object.getString("updated_date")));
+                                        String getId = object.getString("id");
+                                        String getFrom = object.getString("_from");
+                                        String getTo = object.getString("_to");
+                                        String getProject = object.getString("project_name");
+                                        String getCompany = object.getString("company_name");
+                                        String getOrder = object.getString("work_order_number");
+                                        String getScope = object.getString("scope_wrk");
+                                        String getRemarks = object.getString("remarks");
+                                        String getUserId = object.getString("user_id");
+                                        String getStatus = object.getString("status");
+                                        String getCreatedDate = object.getString("created_date");
+                                        String getUpdatedDate = object.getString("updated_date");
+
+                                        db.addProject(new Project(getId, getFrom, getTo, getProject, getCompany, getOrder, getScope, getRemarks, getUserId, getStatus, getCreatedDate, getUpdatedDate));
                                     }
-                                    //db.addProject(new Project("64", "gy","tt", "gy","gh", "fy","fg", "gg","1", "1","2017-05-10 14:19:48", "2017-05-10 14:19:48"));
                                     getOfflineProjects();
-//                                    Gson gson = new Gson();
-//                                    String json = result.toString();
-//                                    taskList = gson.fromJson(json, new TypeToken<List<ProjectGetSet>>(){}.getType());
-//                                    Log.e("taskList",""+taskList);
-//                                    AdapterAddressList = new ProjectListing(taskList);
-//                                    listProject.setAdapter(AdapterAddressList);
                                 }
                                 else
                                 {
