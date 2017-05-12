@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -87,34 +86,35 @@ public class ProjectsActivity extends AppCompatActivity {
             Log.e("Online", String.valueOf(isOnline()));
             getProjectList();
         }else {
-            getOfflineProjects();
+            try {
+                getOfflineProjects();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             Log.e("Offline", String.valueOf(isOnline()));
             Toast.makeText(ProjectsActivity.this, "No Internet", Toast.LENGTH_LONG).show();
         }
 
     }
 
-    public void getOfflineProjects() {
+    public void getOfflineProjects() throws JSONException {
         Log.d("Reading: ", "Reading all contacts..");
         List<Project> projects = db.getAllProjects();
-        Log.d("Name: ", String.valueOf(projects));
+
+        JSONArray projArray = new JSONArray();
+        for (Project cn : projects) {
+            JSONObject proj = new JSONObject();
+            proj.put("id", cn.get_id());
+            proj.put("project_name", cn.get_project_name());
+            projArray.put(proj);
+        }
 
         Gson gson = new Gson();
-        String json = projects.toString();
-        taskList = gson.fromJson(json, new TypeToken<List<ProjectGetSet>>(){}.getType());
+        JSONArray json = projArray;
+        taskList = gson.fromJson(String.valueOf(json), new TypeToken<List<ProjectGetSet>>(){}.getType());
         Log.e("taskList",""+taskList);
         AdapterAddressList = new ProjectListing(taskList);
         listProject.setAdapter(AdapterAddressList);
-        for (Project cn : projects) {
-            String log = "Id: "+cn.get_id()+" ,from: " + cn.get_from() + " ,to: " + cn.get_to()
-                    + " ,project: " + cn.get_project_name()+ " ,company: " + cn.get_company_name()
-                    + " ,work order: " + cn.get_work_order_number()+ " ,scope: " + cn.get_scope_wrk()
-                    + " ,remarks: " + cn.get_remarks()+ " ,user Id: " + cn.get_user_id()
-                    + " ,staus: " + cn.get_status()+ " ,created date: " + cn.get_created_date()+ " ,updatd date: " + cn.get_updated_date();
-            // Writing Contacts to log
-            Log.d("Name: ", log);
-
-        }
     }
 
     private void getProjectList() {
@@ -248,7 +248,9 @@ public class ProjectsActivity extends AppCompatActivity {
             holder.linProject.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(ProjectsActivity.this, MapActivity.class);
+                    i.putExtra("PROJECT_ID", list.getId());
+                    startActivity(i);
                 }
             });
             return convertView;

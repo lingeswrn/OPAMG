@@ -17,4 +17,10 @@
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="remarks">Remarks</string>
+    <string name="title_activity_add_measurement">Map</string>
+
+
+    <!--Maps activity -->
+    <string name="gps_network_not_enabled">GPS not enabled.</string>
+    <string name="open_location_settings">Open Settings</string>
 </resources>

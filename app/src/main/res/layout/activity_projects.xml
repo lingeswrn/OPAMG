@@ -39,15 +39,4 @@
             android:id="@+id/projects"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"></ListView>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
-        <Button android:id="@+id/btnGetMoreResults"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Get more"
-            android:layout_alignParentBottom="true" />
-    </RelativeLayout>
 </LinearLayout>
