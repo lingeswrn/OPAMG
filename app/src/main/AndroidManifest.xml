@@ -23,6 +23,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +48,8 @@
 
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_add_measurement"></activity>
+            android:label="@string/title_activity_add_measurement" />
+        <activity android:name=".AddMeasurement"></activity>
     </application>
 
 </manifest>
