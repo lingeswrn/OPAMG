@@ -85,6 +85,12 @@ public class ProjectsActivity extends AppCompatActivity {
         if(isOnline()){
             Log.e("Online", String.valueOf(isOnline()));
             getProjectList();
+
+            db.createEquipmentTable();
+            db.createLayersTable();
+
+            getEquipmentList();
+            getLayersList();
         }else {
             try {
                 getOfflineProjects();
@@ -97,8 +103,74 @@ public class ProjectsActivity extends AppCompatActivity {
 
     }
 
+    private void getEquipmentList() {
+        RequestQueue queue = Volley.newRequestQueue(ProjectsActivity.this);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("action", Variables.LIST);
+        JSONObject data = new JSONObject(params);
+
+        JSONObject param = new JSONObject();
+        try {
+            param.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST, Variables.API_URL + Variables.EQUIPMENTS, param,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObj) {
+
+
+                        if (jsonObj != null) {
+
+                            try {
+                                String code = jsonObj.getString("code");
+                                Log.e("code", code);
+
+                                String responce = jsonObj.getString("data");
+                                JSONArray result = jsonObj.getJSONArray("data");
+                                Log.e("result", "" + result);
+
+                                if (code.equalsIgnoreCase("200")) {
+                                    db.deleteTable(db.getTableEquipments());
+                                    for (int i = 0; i < result.length(); i++)
+                                    {
+                                        JSONObject object = result.getJSONObject(i);
+                                        Log.e("datat", String.valueOf(object));
+                                        String getId = object.getString("id");
+                                        String getModelNumber = object.getString("model_number");
+                                        String getLastCalibration = object.getString("last_calibration_service_center");
+                                        String getExpiryDate = object.getString("expiry_date");
+                                        String getLeastCount = object.getString("least_count");
+                                        String getOwner = object.getString("owner");
+                                        String getStatus = object.getString("status");
+                                        String getCreatedDate = object.getString("created_date");
+
+                                        db.addEquipment(new Equipments(getId, getModelNumber, getLastCalibration, getExpiryDate, getLeastCount, getOwner, getStatus, getCreatedDate));
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(ProjectsActivity.this, responce, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(ProjectsActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(ProjectsActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+        queue.add(request);
+    }
+
     public void getOfflineProjects() throws JSONException {
-        Log.d("Reading: ", "Reading all contacts..");
+
         List<Project> projects = db.getAllProjects();
 
         JSONArray projArray = new JSONArray();
@@ -116,6 +188,7 @@ public class ProjectsActivity extends AppCompatActivity {
         AdapterAddressList = new ProjectListing(taskList);
         listProject.setAdapter(AdapterAddressList);
     }
+
 
     private void getProjectList() {
         String id = prefs.getString(Variables.SESSION_ID, "");
@@ -151,18 +224,15 @@ public class ProjectsActivity extends AppCompatActivity {
 
                             try {
                                 String code = jsonObj.getString("code");
-                                Log.e("code", code);
 
                                 String responce = jsonObj.getString("data");
                                 JSONArray result = jsonObj.getJSONArray("data");
-                                Log.e("result", "" + result);
 
                                 if (code.equalsIgnoreCase("200")) {
                                     db.deleteTable(db.getTableProjects());
                                     for (int i = 0; i < result.length(); i++)
                                     {
                                         JSONObject object = result.getJSONObject(i);
-                                        Log.e("datat", String.valueOf(object));
                                         String getId = object.getString("id");
                                         String getFrom = object.getString("_from");
                                         String getTo = object.getString("_to");
@@ -179,6 +249,56 @@ public class ProjectsActivity extends AppCompatActivity {
                                         db.addProject(new Project(getId, getFrom, getTo, getProject, getCompany, getOrder, getScope, getRemarks, getUserId, getStatus, getCreatedDate, getUpdatedDate));
                                     }
                                     getOfflineProjects();
+                                }
+                                else
+                                {
+                                    Toast.makeText(ProjectsActivity.this, responce, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(ProjectsActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(ProjectsActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+        queue.add(request);
+    }
+
+    private void getLayersList() {
+
+        RequestQueue queue = Volley.newRequestQueue(ProjectsActivity.this);
+        Map<String, String> params = new HashMap<String, String>();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET, Variables.API_URL + Variables.LAYERS, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObj) {
+                        pd.dismiss();
+
+                        if (jsonObj != null) {
+
+                            try {
+                                String code = jsonObj.getString("code");
+
+                                String responce = jsonObj.getString("data");
+                                JSONArray result = jsonObj.getJSONArray("data");
+
+                                if (code.equalsIgnoreCase("200")) {
+                                    db.deleteTable(db.getTableLayers());
+                                    for (int i = 0; i < result.length(); i++)
+                                    {
+                                        JSONObject object = result.getJSONObject(i);
+                                        String getCode = object.getString("code");
+                                        String getDesc = object.getString("description");
+
+                                        db.addLayers(new Layers(getCode, getDesc));
+                                    }
                                 }
                                 else
                                 {

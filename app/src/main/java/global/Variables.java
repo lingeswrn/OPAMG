@@ -17,6 +17,8 @@ public class Variables {
     //TODO
     public static String LOGIN = "login";
     public static String PROJECTS = "projects";
+    public static String EQUIPMENTS = "equipments";
+    public static String LAYERS = "layers";
 
     //ACTION
     public static String LIST = "list";

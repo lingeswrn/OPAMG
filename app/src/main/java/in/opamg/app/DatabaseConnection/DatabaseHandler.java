@@ -5,10 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import in.opamg.app.Models.Equipments;
+import in.opamg.app.Models.Layers;
 import in.opamg.app.Models.Project;
 
 /**
@@ -24,12 +27,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "OPAMG";
 
+    // Projects table name
+    private static final String TABLE_PROJECTS = "projects";
+    private static final String TABLE_EQUIPMENTS = "equipments_list";
+
+    public static String getTableLayers() {
+        return TABLE_LAYERS;
+    }
+
+    private static final String TABLE_LAYERS = "layers";
+
     public static String getTableProjects() {
         return TABLE_PROJECTS;
     }
 
-    // Projects table name
-    private static final String TABLE_PROJECTS = "projects";
+    public static String getTableEquipments() {
+        return TABLE_EQUIPMENTS;
+    }
 
     // Projects Table Columns names
     private static final String KEY_ID = "id";
@@ -52,14 +66,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_PROJECTS + "("
+        String CREATE_PROJECT_TABLE = "CREATE TABLE " + TABLE_PROJECTS + "("
                 + KEY_ID + " INTEGER," + KEY_FROM + " TEXT,"
                 + KEY_TO + " TEXT, " + KEY_PROJECT_NAME +" TEXT,"
                 + KEY_COMPANY_NAME + " TEXT, " + KEY_WORK_ORDER_NUMBER +" TEXT,"
                 + KEY_SCOPE_WORK + " TEXT, "+ KEY_REMARKS +" TEXT,"
                 + KEY_USER_ID + " TEXT, " + KEY_STATUS + "TEXT,"
                 + KEY_CREATED_DATE + "TEXT, "+ KEY_UPDATED_DATE +" TEXT)";
-        db.execSQL(CREATE_CONTACTS_TABLE);
+        Log.e("Query", CREATE_PROJECT_TABLE);
+        db.execSQL(CREATE_PROJECT_TABLE);
     }
 
     // Upgrading database
@@ -78,7 +93,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    // Adding new contact
+    // Adding new Project
     public void addProject(Project project) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -99,6 +114,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_PROJECTS, null, values);
+        db.close(); // Closing database connection
+    }
+    // Adding new Equipment
+    public void addEquipment(Equipments equipments) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("id", equipments.get_id());
+        values.put("model_number", equipments.get_model_number());
+        values.put("last_calibration_service_center", equipments.get_last_calibration_service_center());
+        values.put("expiry_date", equipments.get_expiry_date());
+        values.put("least_count", equipments.get_least_count());
+        values.put("owner", equipments.get_owner());
+        values.put("status", equipments.get_status());
+        values.put("created_date", equipments.get_created_date());
+
+
+        // Inserting Row
+        db.insert(TABLE_EQUIPMENTS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Adding new Layers
+    public void addLayers(Layers layers) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("code", layers.get_code());
+        values.put("description", layers.get_description());
+        // Inserting Row
+        db.insert(TABLE_LAYERS, null, values);
         db.close(); // Closing database connection
     }
 
@@ -134,5 +180,92 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // return contact list
         return projectList;
+    }
+    public void createEquipmentTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String CREATE_EQUIPMENT_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_EQUIPMENTS +" ( id INTEGER, model_number TEXT, last_calibration_service_center TEXT, expiry_date TEXT, least_count TEXT, owner TEXT, status TEXT, created_date TEXT )";
+        db.execSQL(CREATE_EQUIPMENT_TABLE);
+    }
+
+
+    public List<Equipments> getAllEquipments() {
+        List<Equipments> equipmentList = new ArrayList<Equipments>();
+        // Select All Query
+        String selectQuery = "SELECT model_number FROM " + TABLE_EQUIPMENTS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Equipments equipments = new Equipments();
+                equipments.set_model_number(cursor.getString(0));
+
+                equipmentList.add(equipments);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return equipmentList;
+    }
+
+    public List<Equipments> getSingleEquipments(String modelNumber) {
+        List<Equipments> equipmentList = new ArrayList<Equipments>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_EQUIPMENTS, new String[] { "id", "model_number", "last_calibration_service_center",
+                        "expiry_date", "least_count", "owner", "status", "created_date" }, "model_number" + "=?",
+                new String[] { String.valueOf(modelNumber) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            do {
+                Equipments equipments = new Equipments();
+                equipments.set_id(cursor.getString(0));
+                equipments.set_model_number(cursor.getString(1));
+                equipments.set_last_calibration_service_center(cursor.getString(2));
+                equipments.set_expiry_date(cursor.getString(3));
+                equipments.set_least_count(cursor.getString(4));
+                equipments.set_owner(cursor.getString(5));
+                equipments.set_status(cursor.getString(6));
+                equipments.set_created_date(cursor.getString(7));
+
+                equipmentList.add(equipments);
+            } while (cursor.moveToNext());
+        }
+        // return contact
+        return equipmentList;
+    }
+
+
+    public List<Layers> getAllLayers() {
+        List<Layers> layers = new ArrayList<Layers>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_LAYERS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Layers lay = new Layers();
+                lay.set_code(cursor.getString(0));
+                lay.set_description(cursor.getString(1));
+
+                layers.add(lay);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return layers;
+    }
+
+    public void createLayersTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String CREATE_LAYER_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_LAYERS +" ( code TEXT, description TEXT )";
+        db.execSQL(CREATE_LAYER_TABLE);
     }
 }

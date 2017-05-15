@@ -27,8 +27,44 @@
     <!-- MEASUREMENTS -->
     <string name="add_measurement">Add Measurement</string>
     <string name="coordinate_measurement">Co-Ordinate Measurement</string>
-    <string name="lat_d_m_s">Latitude(D, M, S)</string>
-    <string name="lng_d_m_s">Longitude(D, M, S)</string>
+    <string name="lat_d_m_s">Latitude(D,M,S)</string>
+    <string name="lng_d_m_s">Longitude(D,M,S)</string>
     <string name="northing">Northing</string>
     <string name="easting">Easting</string>
+    <string name="mapping_ch">Mapping CH</string>
+    <string name="measurement_ch">Measurment CH</string>
+    <string name="gps_offset_length">GPS Offset Length</string>
+    <string name="n_offset">N offset</string>
+    <string name="e_offset">E offset</string>
+    <string name="l_section_offset">L Section Offset</string>
+    <string name="x_section_offset">X Section Offset</string>
+    <string name="search_layers">Search Layers</string>
+    <string name="site_count">Site Count:</string>
+    <string name="back_site">Back Site</string>
+    <string name="intermediate_site">Intermediate Site</string>
+    <string name="fore_site">Forward Site</string>
+    <string name="equipment_list">Using Equipments List &amp; Features</string>
+    <string name="last_calibration_service_center">LAST CALIBRATION SERVIVE CENTER</string>
+    <string name="expiry_date">EXPIRY DATE</string>
+    <string name="least_count">LEAST COUNT</string>
+    <string name="owner">OWNER / INCHARGE</string>
+    <string name="dgps">DGPS File Name</string>
+    <string name="el">EL</string>
+    <string name="height_of_instrument">Hight of Instrument</string>
+    <string name="adj_rl">ADJ RL</string>
+    <string name="tbm_rl">TBM RL</string>
+    <string name="bs_angle">BS Angle</string>
+    <string name="fs_angle">FS Angle</string>
+    <string name="save">SAVE</string>
+
+    <string-array name="country_arrays">
+        <item>Malaysia</item>
+        <item>United States</item>
+        <item>Indonesia</item>
+        <item>France</item>
+        <item>Italy</item>
+        <item>Singapore</item>
+        <item>New Zealand</item>
+        <item>India</item>
+    </string-array>
 </resources>
