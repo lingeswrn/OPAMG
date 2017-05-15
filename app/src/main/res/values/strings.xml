@@ -23,6 +23,7 @@
     <!--Maps activity -->
     <string name="gps_network_not_enabled">GPS not enabled.</string>
     <string name="open_location_settings">Open Settings</string>
+    <string name="choose_map">Choose Co-ordinates</string>
 
     <!-- MEASUREMENTS -->
     <string name="add_measurement">Add Measurement</string>
@@ -56,15 +57,4 @@
     <string name="bs_angle">BS Angle</string>
     <string name="fs_angle">FS Angle</string>
     <string name="save">SAVE</string>
-
-    <string-array name="country_arrays">
-        <item>Malaysia</item>
-        <item>United States</item>
-        <item>Indonesia</item>
-        <item>France</item>
-        <item>Italy</item>
-        <item>Singapore</item>
-        <item>New Zealand</item>
-        <item>India</item>
-    </string-array>
 </resources>

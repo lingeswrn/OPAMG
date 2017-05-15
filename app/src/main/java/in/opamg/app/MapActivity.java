@@ -160,8 +160,6 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-
-        Log.e("Check", "enter");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },      LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
             return;
@@ -173,8 +171,6 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onMapClick(LatLng point) {
                 mMap.clear();
                 MarkerOptions markerOptions = new MarkerOptions();
-                Log.e("Latitude", ""+ mMap.getMyLocation().getLatitude());
-                Log.e("Longitude", ""+ mMap.getMyLocation().getLongitude());
                 float zoomLevel = (float) 16.00;
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(point));

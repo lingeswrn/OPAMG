@@ -1,13 +1,17 @@
 package in.opamg.app;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +33,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +55,8 @@ public class ProjectsActivity extends AppCompatActivity {
     ArrayList<ProjectGetSet> taskList = new ArrayList<ProjectGetSet>();
     ImageView addProject;
     DatabaseHandler db;
+    private static final int PERMISSION_REQUEST_CODE = 1337;
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,35 @@ public class ProjectsActivity extends AppCompatActivity {
 
         });
 
+        checkPermission();
+    }
+
+    public void checkPermission(){
+        int result = ContextCompat.checkSelfPermission(ProjectsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if ( result == -1 ){
+            ActivityCompat.requestPermissions(ProjectsActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSION_REQUEST_CODE);
+        }else {
+            callAll();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    callAll();
+
+                } else {
+                    Toast toast = Toast.makeText(ProjectsActivity.this, "Location Permission needed", Toast.LENGTH_LONG);
+                    toast.show();
+                    checkPermission();
+                }
+                break;
+        }
+    }
+
+    public void callAll(){
         if(isOnline()){
             Log.e("Online", String.valueOf(isOnline()));
             getProjectList();
@@ -100,7 +134,6 @@ public class ProjectsActivity extends AppCompatActivity {
             Log.e("Offline", String.valueOf(isOnline()));
             Toast.makeText(ProjectsActivity.this, "No Internet", Toast.LENGTH_LONG).show();
         }
-
     }
 
     private void getEquipmentList() {
