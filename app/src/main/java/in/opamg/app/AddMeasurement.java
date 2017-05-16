@@ -146,8 +146,15 @@ public class AddMeasurement extends AppCompatActivity {
         zoneNorthingEasting(Latitude, Longitude);
         db.createMeasurementTables();
         db.createMeasurementTables();
-        String previousData = db.getMeasurementByProjectId( ProjectId );
-        String[] previousData1 = {"a", "abc"};
+
+        JSONArray previousData = db.getMeasurementByProjectId( ProjectId );
+
+        if( previousData.length() > 0){
+
+        }else {
+
+        }
+
         Log.e("Previous", String.valueOf(previousData));
 
         try {

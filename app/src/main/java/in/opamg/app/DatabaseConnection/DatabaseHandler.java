@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -282,18 +286,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_MEASUREMENT);
     }
 
-    public String getMeasurementByProjectId(int projectId ){
+    public JSONArray getMeasurementByProjectId(int projectId ){
         String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " ORDER BY id DESC LIMIT 1";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        String str = "";
-        if(cursor.moveToFirst())
-            str  =  cursor.getString( cursor.getColumnIndex("project_id") );
-        Log.e("eeeeee", str);
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("name", "demo");
-        map.put("fname", "fdemo");
+
+        JSONArray previousArray = new JSONArray();
+        if(cursor.moveToFirst()) {
+            JSONObject prev = new JSONObject();
+            try {
+                prev.put("id", cursor.getColumnIndex("id"));
+                prev.put("project_id", cursor.getColumnIndex("project_id"));
+                prev.put("equipement_id", cursor.getColumnIndex("equipement_id"));
+                prev.put("layer_code", cursor.getColumnIndex("layer_code"));
+                prev.put("lattitude", cursor.getColumnIndex("lattitude"));
+                prev.put("longitude", cursor.getColumnIndex("longitude"));
+                prev.put("utm_zone", cursor.getColumnIndex("utm_zone"));
+                prev.put("utm_easting", cursor.getColumnIndex("utm_easting"));
+                prev.put("utm_northing", cursor.getColumnIndex("utm_northing"));
+                prev.put("angle_redians", cursor.getColumnIndex("angle_redians"));
+                prev.put("cs_offset_e", cursor.getColumnIndex("cs_offset_e"));
+                prev.put("cs_offset_n", cursor.getColumnIndex("cs_offset_n"));
+                prev.put("el", cursor.getColumnIndex("el"));
+                prev.put("mapping_ch", cursor.getColumnIndex("mapping_ch"));
+                prev.put("ch_by_auto_level", cursor.getColumnIndex("ch_by_auto_level"));
+                prev.put("measurment_ch", cursor.getColumnIndex("measurment_ch"));
+                prev.put("gps_offset_length", cursor.getColumnIndex("gps_offset_length"));
+                prev.put("bs_offset", cursor.getColumnIndex("bs_offset"));
+                prev.put("is_offset", cursor.getColumnIndex("is_offset"));
+                prev.put("fs_offset", cursor.getColumnIndex("fs_offset"));
+                prev.put("n_offset", cursor.getColumnIndex("n_offset"));
+                prev.put("e_offset", cursor.getColumnIndex("e_offset"));
+                prev.put("l_section_offset", cursor.getColumnIndex("l_section_offset"));
+                prev.put("x_section_offset", cursor.getColumnIndex("x_section_offset"));
+                prev.put("rise_plus", cursor.getColumnIndex("rise_plus"));
+                prev.put("fall_minus", cursor.getColumnIndex("fall_minus"));
+                prev.put("avg_hight_of_instrument_from_gl", cursor.getColumnIndex("avg_hight_of_instrument_from_gl"));
+                prev.put("hight_of_instrument", cursor.getColumnIndex("hight_of_instrument"));
+                prev.put("calculated_reduce_rl", cursor.getColumnIndex("calculated_reduce_rl"));
+                prev.put("checked_reduce_level", cursor.getColumnIndex("checked_reduce_level"));
+                prev.put("remarks", cursor.getColumnIndex("remarks"));
+                prev.put("adj_rl", cursor.getColumnIndex("adj_rl"));
+                prev.put("adjustment_error", cursor.getColumnIndex("adjustment_error"));
+                prev.put("tbm_rl", cursor.getColumnIndex("tbm_rl"));
+                prev.put("bs_angle", cursor.getColumnIndex("bs_angle"));
+                prev.put("fs_angle", cursor.getColumnIndex("fs_angle"));
+                prev.put("close_photograph", cursor.getColumnIndex("close_photograph"));
+                prev.put("location_photograph", cursor.getColumnIndex("location_photograph"));
+                prev.put("screen_shot", cursor.getColumnIndex("screen_shot"));
+                prev.put("other_photograph", cursor.getColumnIndex("other_photograph"));
+                prev.put("status", cursor.getColumnIndex("status"));
+                prev.put("created_date", cursor.getColumnIndex("created_date"));
+                previousArray.put(prev);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.e("Previous Date", String.valueOf(previousArray));
         cursor.close();
-        return map.toString();
+        return previousArray;
     }
 }
