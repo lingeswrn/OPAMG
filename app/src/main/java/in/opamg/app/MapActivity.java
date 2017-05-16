@@ -41,13 +41,14 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     boolean network_enabled = false;
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
-
+    String projectId;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        projectId = getIntent().getStringExtra("PROJECT_ID");
         // Get the location manager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -98,10 +99,6 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         SupportMapFragment supportMapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
-        //googleMap.setMyLocationEnabled(true);
-//        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-
         if (location != null) {
             onLocationChanged(location);
         }
@@ -187,6 +184,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
                 Intent intent = new Intent(MapActivity.this, AddMeasurement.class);
                 intent.putExtra("Latitude", ""+latitude);
                 intent.putExtra("Longitude", ""+longitude);
+                intent.putExtra("ProjectId", projectId);
                 startActivity(intent);
                 return false;
             }

@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import in.opamg.app.Models.Equipments;
 import in.opamg.app.Models.Layers;
@@ -235,7 +237,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 equipmentList.add(equipments);
             } while (cursor.moveToNext());
         }
-        // return contact
         return equipmentList;
     }
 
@@ -267,5 +268,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String CREATE_LAYER_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_LAYERS +" ( code TEXT, description TEXT )";
         db.execSQL(CREATE_LAYER_TABLE);
+    }
+
+    public void createMeasurementTables(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String CREATE_STAFF_READINGS = "CREATE TABLE IF NOT EXISTS staff_readings ( id INT PRIMARY KEY, measurement_id INT, back_site TEXT, intermediate_site TEXT, forward_site TEXT)";
+        db.execSQL(CREATE_STAFF_READINGS);
+
+        String CREATE_GPS_COORDINATES = "CREATE TABLE IF NOT EXISTS staff_readings ( id INT PRIMARY KEY, measurement_id INT, type TEXT, deg TEXT, min TEXT, sec TEXT)";
+        db.execSQL(CREATE_GPS_COORDINATES);
+
+        String CREATE_MEASUREMENT = "CREATE TABLE IF NOT EXISTS measurement ( id INT PRIMARY KEY, project_id INT, equipement_id INT, layer_code TEXT, lattitude TEXT, longitude TEXT, utm_zone TEXT, utm_easting TEXT, utm_northing TEXT, angle_redians TEXT, cs_offset_e TEXT, cs_offset_n TEXT, el TEXT, mapping_ch TEXT, ch_by_auto_level TEXT, measurment_ch TEXT, gps_offset_length TEXT, bs_offset TEXT, is_offset TEXT, fs_offset TEXT, n_offset TEXT, e_offset TEXT, l_section_offset TEXT, x_section_offset TEXT, rise_plus TEXT, fall_minus TEXT, avg_hight_of_instrument_from_gl TEXT, hight_of_instrument TEXT, calculated_reduce_rl TEXT, checked_reduce_level TEXT, remarks TEXT, adj_rl TEXT, adjustment_error TEXT, tbm_rl TEXT, bs_angle TEXT, fs_angle TEXT, close_photograph TEXT, location_photograph TEXT, screen_shot TEXT, other_photograph TEXT, status INT, created_date TEXT )";
+        db.execSQL(CREATE_MEASUREMENT);
+    }
+
+    public String getMeasurementByProjectId(int projectId ){
+        String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " ORDER BY id DESC LIMIT 1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        String str = "";
+        if(cursor.moveToFirst())
+            str  =  cursor.getString( cursor.getColumnIndex("project_id") );
+        Log.e("eeeeee", str);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("name", "demo");
+        map.put("fname", "fdemo");
+        cursor.close();
+        return map.toString();
     }
 }

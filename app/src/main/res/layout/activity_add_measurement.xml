@@ -360,7 +360,8 @@
                 android:orientation="horizontal"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:id="@+id/linTitle">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -377,75 +378,83 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/equipment"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:id="@+id/linEqui"
+                    android:visibility="gone">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
-                        <EditText
+                        <Spinner
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:hint="Id"
-                            android:textSize="10sp"
-                            android:id="@+id/equipmentId"
-                            android:editable="false"
-                            android:visibility="gone"/>
-
-                        <EditText
-                            android:id="@+id/last_calibration_service_center"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:editable="false"
-                            android:hint="@string/last_calibration_service_center"
-                            android:textSize="9sp" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:hint="@string/expiry_date"
-                            android:textSize="12sp"
-                            android:id="@+id/expiry_date"
-                            android:editable="false"/>
+                            android:layout_height="wrap_content"
+                            android:id="@+id/equipment"/>
                     </LinearLayout>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <EditText
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:hint="@string/least_count"
-                            android:textSize="12sp"
-                            android:id="@+id/least_count"
-                            android:editable="false"/>
-                        <EditText
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:hint="Id"
+                                android:textSize="10sp"
+                                android:id="@+id/equipmentId"
+                                android:editable="false"
+                                android:visibility="gone"/>
+
+                            <EditText
+                                android:id="@+id/last_calibration_service_center"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:editable="false"
+                                android:hint="@string/last_calibration_service_center"
+                                android:textSize="9sp" />
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:hint="@string/expiry_date"
+                                android:textSize="12sp"
+                                android:id="@+id/expiry_date"
+                                android:editable="false"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:hint="@string/owner"
-                            android:textSize="12sp"
-                            android:id="@+id/owner"
-                            android:editable="false"/>
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:hint="@string/least_count"
+                                android:textSize="12sp"
+                                android:id="@+id/least_count"
+                                android:editable="false"/>
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:hint="@string/owner"
+                                android:textSize="12sp"
+                                android:id="@+id/owner"
+                                android:editable="false"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

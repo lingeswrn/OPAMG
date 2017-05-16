@@ -47,6 +47,8 @@ public class AddMeasurement extends AppCompatActivity {
     LinearLayout thirdCount;
     DatabaseHandler db;
     AutoCompleteTextView autoComplete;
+    LinearLayout linTitle, linEqui;
+    int ProjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,11 @@ public class AddMeasurement extends AppCompatActivity {
 
         Latitude = Double.valueOf(getIntent().getStringExtra("Latitude"));
         Longitude = Double.valueOf(getIntent().getStringExtra("Longitude"));
+        ProjectId = Integer.parseInt(getIntent().getStringExtra("ProjectId"));
+
+        linTitle = (LinearLayout) findViewById(R.id.linTitle);
+        linEqui = (LinearLayout) findViewById(R.id.linEqui);
+
 
         latDms      = (EditText) findViewById(R.id.latDMS);
         longDMS     = (EditText) findViewById(R.id.longDMS);
@@ -126,14 +133,22 @@ public class AddMeasurement extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
+        linTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linEqui.setVisibility(View.VISIBLE);
             }
-
-
         });
         convertToDegree(Latitude, Longitude);
         zoneNorthingEasting(Latitude, Longitude);
+        db.createMeasurementTables();
+        db.createMeasurementTables();
+        String previousData = db.getMeasurementByProjectId( ProjectId );
+        String[] previousData1 = {"a", "abc"};
+        Log.e("Previous", String.valueOf(previousData));
 
         try {
             getOfflineEquipments();
@@ -254,11 +269,9 @@ public class AddMeasurement extends AppCompatActivity {
 
         List<Layers> lay = db.getAllLayers();
         String[] languages = new String[100];
-        languages[0] = "text";
         JSONArray equiArray = new JSONArray();
         int count = 0;
         for (Layers cn : lay) {
-            Log.e("eee", cn.get_code());
             languages[count] = cn.get_code();
             count++;
         }
