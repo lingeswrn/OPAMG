@@ -53,7 +53,7 @@ public class ProjectsActivity extends AppCompatActivity {
     ListView listProject;
     ProgressDialog pd;
     ArrayList<ProjectGetSet> taskList = new ArrayList<ProjectGetSet>();
-    ImageView addProject;
+    ImageView addProject, logout;
     DatabaseHandler db;
     private static final int PERMISSION_REQUEST_CODE = 1337;
     private View view;
@@ -68,6 +68,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
         listProject = (ListView) findViewById(R.id.projects);
         addProject = (ImageView) findViewById(R.id.addProject);
+        logout = (ImageView) findViewById(R.id.logout);
 
         String id = prefs.getString(Variables.SESSION_ID, "");
         String name = prefs.getString(Variables.SESSION_NAME, "");
@@ -87,6 +88,18 @@ public class ProjectsActivity extends AppCompatActivity {
 
         });
 
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("id", "0");
+                editor.commit();
+
+                Intent i = new Intent(ProjectsActivity.this, LoginActivity.class);
+                startActivity(i);
+                ProjectsActivity.this.finish();
+            }
+        });
         checkPermission();
     }
 

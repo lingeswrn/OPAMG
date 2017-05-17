@@ -21,17 +21,23 @@
             android:textColor="#FFFFFF"
             android:layout_gravity="center"
             android:textSize="20sp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="@string/projects"
             android:layout_marginLeft="30dp"/>
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_plus"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_add"
             android:layout_weight="6"
             android:layout_gravity="center"
             android:id="@+id/addProject"/>
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_logout"
+            android:layout_weight="6"
+            android:layout_gravity="center"
+            android:id="@+id/logout"/>
     </LinearLayout>
         <ListView
             android:layout_width="match_parent"

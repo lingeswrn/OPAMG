@@ -21,7 +21,7 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 String id = prefs.getString(Variables.SESSION_ID, "");
-                if( id.equalsIgnoreCase("")){
+                if( id.equalsIgnoreCase("0")){
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     startActivity(intent);
                     SplashScreen.this.finish();
