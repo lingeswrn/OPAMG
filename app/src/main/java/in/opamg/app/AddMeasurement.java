@@ -4,6 +4,7 @@ import android.location.Location;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,6 +41,7 @@ public class AddMeasurement extends AppCompatActivity {
     EditText latDms, longDMS, northing, easting, zone, mapping_ch, measurement_ch, gps_offset_length, n_offset, e_offset;
     EditText l_section_offset, x_section_offset, search_layers, equipmentId, last_calibration_service_center, expiry_date, least_count;
     EditText owner, dgps, el, height_of_instrument, adj_rl, tbm_rl, bs_angle, fs_angle;
+    EditText back_site, intermediate_site,forward_site, back_site_1, intermediate_site_1, forward_site_1, back_site_2, intermediate_site_2, forward_site_2;
     Spinner equipment;
     Button save;
     RadioGroup radioGroup;
@@ -49,6 +51,8 @@ public class AddMeasurement extends AppCompatActivity {
     AutoCompleteTextView autoComplete;
     LinearLayout linTitle, linEqui;
     int ProjectId;
+    String type;
+    int previousDataLength;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +95,26 @@ public class AddMeasurement extends AppCompatActivity {
         fs_angle        = (EditText) findViewById(R.id.fs_angle);
         equipmentId        = (EditText) findViewById(R.id.equipmentId);
 
+        back_site        = (EditText) findViewById(R.id.back_site);
+        intermediate_site        = (EditText) findViewById(R.id.intermediate_site);
+        forward_site        = (EditText) findViewById(R.id.forward_site);
+        back_site_1        = (EditText) findViewById(R.id.back_site_1);
+        intermediate_site_1        = (EditText) findViewById(R.id.intermediate_site_1);
+        forward_site_1        = (EditText) findViewById(R.id.forward_site_1);
+        back_site_2        = (EditText) findViewById(R.id.back_site_2);
+        intermediate_site_2        = (EditText) findViewById(R.id.intermediate_site_2);
+        forward_site_2        = (EditText) findViewById(R.id.forward_site_2);
+
         equipment = (Spinner) findViewById(R.id.equipment);
         save = (Button) findViewById(R.id.save);
         thirdCount = (LinearLayout) findViewById(R.id.thirdCount);
         radioGroup = (RadioGroup) findViewById(R.id.siteCount);
         autoComplete=(AutoCompleteTextView)findViewById(R.id.search_layers);
+
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        // find the radiobutton by returned id
+        radioButton = (RadioButton) findViewById(selectedId);
+        type = (String) radioButton.getText();
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -104,9 +123,7 @@ public class AddMeasurement extends AppCompatActivity {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 // find the radiobutton by returned id
                 radioButton = (RadioButton) findViewById(selectedId);
-                String type = (String) radioButton.getText();
-                Toast.makeText(AddMeasurement.this,radioButton.getText(), Toast.LENGTH_SHORT).show();
-
+                type = (String) radioButton.getText();
                 if( type.equalsIgnoreCase("3")){
                     thirdCount.setVisibility(View.VISIBLE);
                 }else{
@@ -142,6 +159,84 @@ public class AddMeasurement extends AppCompatActivity {
                 linEqui.setVisibility(View.VISIBLE);
             }
         });
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Double getMappingCh         = Double.valueOf(mapping_ch.getText().toString());
+                Double getMeasurementCh     = Double.valueOf(measurement_ch.getText().toString());
+                Double getGPSOffsetLength   = Double.valueOf(gps_offset_length.getText().toString());
+                Double getNOffset           = Double.valueOf(n_offset.getText().toString());
+                Double getEOffset           = Double.valueOf(e_offset.getText().toString());
+                String getLayer             = autoComplete.getText().toString();
+                String getBackSite          = back_site.getText().toString();
+                String getIntermediateSite  = intermediate_site.getText().toString();
+                String getForwardSite       = forward_site.getText().toString();
+                String getBackSite1          = back_site_1.getText().toString();
+                String getIntermediateSite1  = intermediate_site_1.getText().toString();
+                String getForwardSite1       = forward_site_1.getText().toString();
+                String getBackSite2          = back_site_2.getText().toString();
+                String getIntermediateSite2  = intermediate_site_2.getText().toString();
+                String getForwardSite2       = forward_site_2.getText().toString();
+
+                if (getMappingCh.equals("")){
+                    mapping_ch.requestFocus();
+                    mapping_ch.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getMeasurementCh.equals("")){
+                    measurement_ch.requestFocus();
+                    measurement_ch.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getGPSOffsetLength.equals("")){
+                    gps_offset_length.requestFocus();
+                    gps_offset_length.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getNOffset.equals("")){
+                    n_offset.requestFocus();
+                    n_offset.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getEOffset.equals("")){
+                    e_offset.requestFocus();
+                    e_offset.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getLayer.equals("")){
+                    search_layers.requestFocus();
+                    search_layers.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else {
+                    Log.e("Data",  "Valid");
+                }
+//else if( type.equalsIgnoreCase("1")){
+//                    if(getBackSite.equals("")){
+//                        if(getIntermediateSite.equals("")){
+//                            if(getForwardSite.equals("")){
+//                                back_site.requestFocus();
+//                                back_site.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+//                            }
+//                        }
+//                    }
+//                }else if( type.equalsIgnoreCase("3")){
+//                    if(getBackSite.equals("")){
+//                        if(getIntermediateSite.equals("")){
+//                            if(getForwardSite.equals("")){
+//                                back_site.requestFocus();
+//                                back_site.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+//                            }
+//                        }
+//                    }
+//                    if(getBackSite1.equals("")){
+//                        if(getIntermediateSite1.equals("")){
+//                            if(getForwardSite1.equals("")){
+//                                back_site_1.requestFocus();
+//                                back_site_1.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+//                            }
+//                        }
+//                    }
+//                    if(getBackSite2.equals("")){
+//                        if(getIntermediateSite2.equals("")){
+//                            if(getForwardSite2.equals("")){
+//                                back_site_2.requestFocus();
+//                                back_site_2.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+//                            }
+//                        }
+//                    }
+//                }
+            }
+        });
         convertToDegree(Latitude, Longitude);
         zoneNorthingEasting(Latitude, Longitude);
         db.createMeasurementTables();
@@ -152,7 +247,12 @@ public class AddMeasurement extends AppCompatActivity {
         if( previousData.length() > 0){
 
         }else {
-
+            previousDataLength = 0;
+            mapping_ch.setText("0.000");
+            measurement_ch.setText("0.000");
+            gps_offset_length.setText("0.000");
+            n_offset.setText("0.000");
+            e_offset.setText("0.000");
         }
 
         Log.e("Previous", String.valueOf(previousData));
