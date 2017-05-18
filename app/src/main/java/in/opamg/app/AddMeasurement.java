@@ -53,6 +53,8 @@ public class AddMeasurement extends AppCompatActivity {
     int ProjectId;
     String type;
     int previousDataLength;
+    Double getMappingCh, getMeasurementCh, getGPSOffsetLength, getNOffset, getEOffset;
+    String getLayer, getBackSite, getIntermediateSite, getForwardSite, getBackSite1, getIntermediateSite1, getForwardSite1, getBackSite2, getIntermediateSite2, getForwardSite2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,21 +165,21 @@ public class AddMeasurement extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Double getMappingCh         = Double.valueOf(mapping_ch.getText().toString());
-                Double getMeasurementCh     = Double.valueOf(measurement_ch.getText().toString());
-                Double getGPSOffsetLength   = Double.valueOf(gps_offset_length.getText().toString());
-                Double getNOffset           = Double.valueOf(n_offset.getText().toString());
-                Double getEOffset           = Double.valueOf(e_offset.getText().toString());
-                String getLayer             = autoComplete.getText().toString();
-                String getBackSite          = back_site.getText().toString();
-                String getIntermediateSite  = intermediate_site.getText().toString();
-                String getForwardSite       = forward_site.getText().toString();
-                String getBackSite1          = back_site_1.getText().toString();
-                String getIntermediateSite1  = intermediate_site_1.getText().toString();
-                String getForwardSite1       = forward_site_1.getText().toString();
-                String getBackSite2          = back_site_2.getText().toString();
-                String getIntermediateSite2  = intermediate_site_2.getText().toString();
-                String getForwardSite2       = forward_site_2.getText().toString();
+                getMappingCh         = Double.valueOf(mapping_ch.getText().toString());
+                getMeasurementCh     = Double.valueOf(measurement_ch.getText().toString());
+                getGPSOffsetLength   = Double.valueOf(gps_offset_length.getText().toString());
+                getNOffset           = Double.valueOf(n_offset.getText().toString());
+                getEOffset           = Double.valueOf(e_offset.getText().toString());
+                getLayer             = autoComplete.getText().toString();
+                getBackSite          = back_site.getText().toString();
+                getIntermediateSite  = intermediate_site.getText().toString();
+                getForwardSite       = forward_site.getText().toString();
+                getBackSite1          = back_site_1.getText().toString();
+                getIntermediateSite1  = intermediate_site_1.getText().toString();
+                getForwardSite1       = forward_site_1.getText().toString();
+                getBackSite2          = back_site_2.getText().toString();
+                getIntermediateSite2  = intermediate_site_2.getText().toString();
+                getForwardSite2       = forward_site_2.getText().toString();
 
                 if (getMappingCh.equals("")){
                     mapping_ch.requestFocus();
@@ -199,6 +201,7 @@ public class AddMeasurement extends AppCompatActivity {
                     search_layers.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
                 }else {
                     Log.e("Data",  "Valid");
+                    calCoreCal();
                 }
 //else if( type.equalsIgnoreCase("1")){
 //                    if(getBackSite.equals("")){
@@ -245,7 +248,7 @@ public class AddMeasurement extends AppCompatActivity {
         JSONArray previousData = db.getMeasurementByProjectId( ProjectId );
 
         if( previousData.length() > 0){
-
+            previousDataLength = previousData.length();
         }else {
             previousDataLength = 0;
             mapping_ch.setText("0.000");
@@ -265,6 +268,97 @@ public class AddMeasurement extends AppCompatActivity {
         }
 
     }
+
+    private void calCoreCal() {
+        JSONArray backsite = new JSONArray();
+        JSONArray intermediatesite = new JSONArray();
+        JSONArray foresite = new JSONArray();
+
+        if(!getBackSite.equalsIgnoreCase(""))
+            backsite.put(getBackSite);
+        if(!getBackSite1.equalsIgnoreCase(""))
+            backsite.put(getBackSite1);
+        if(!getBackSite2.equalsIgnoreCase(""))
+            backsite.put(getBackSite2);
+
+        if(!getIntermediateSite.equalsIgnoreCase(""))
+            intermediatesite.put(getIntermediateSite);
+        if(!getIntermediateSite1.equalsIgnoreCase(""))
+            intermediatesite.put(getIntermediateSite1);
+        if(!getIntermediateSite2.equalsIgnoreCase(""))
+            intermediatesite.put(getIntermediateSite2);
+
+        if(!getForwardSite.equalsIgnoreCase(""))
+            foresite.put(getForwardSite);
+        if(!getForwardSite1.equalsIgnoreCase(""))
+            foresite.put(getForwardSite1);
+        if(!getForwardSite2.equalsIgnoreCase(""))
+            foresite.put(getForwardSite2);
+
+        Double bsoffset = calSiteOffset(backsite);
+        Double isoffset = calSiteOffset(intermediatesite);
+        Double fsoffset = calSiteOffset(foresite);
+
+        Log.e("bsoffset", String.valueOf(bsoffset));
+        Log.e("isoffset", String.valueOf(isoffset));
+        Log.e("fsoffset", String.valueOf(fsoffset));
+    }
+
+    private Double calSiteOffset(JSONArray backsite) {
+        Double returnValue = 0.000;
+        Log.e("backsite", String.valueOf(backsite));
+
+        if(previousDataLength == 0){
+
+            if(backsite.length() > 1){
+                Log.e("enter", "if");
+                try {
+                    if( Double.valueOf(backsite.getString(0)) > 0 && Double.valueOf(backsite.getString(2)) > 0){
+                        Log.e("1try", String.valueOf(Double.valueOf(backsite.getString(0))));
+                        Log.e("2try", String.valueOf(Double.valueOf(backsite.getString(2))));
+                        try {
+
+
+                            returnValue = (Double.valueOf(backsite.getString(0)) - Double.valueOf(backsite.getString(2)) * 100);
+                            Log.e("returnValue", String.valueOf(returnValue));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        Log.e("1catch", String.valueOf(Double.valueOf(backsite.getString(0))));
+                        Log.e("2ccc", String.valueOf(Double.valueOf(backsite.getString(2))));
+                        returnValue = 0.000;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                Log.e("enter", "else");
+                try {
+                    returnValue = Double.valueOf(backsite.getString(0));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }else {
+            if(backsite.length() > 1){
+                try {
+                    returnValue = (Double.valueOf(backsite.getString(0)) - Double.valueOf(backsite.getString(2)) * 100);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                try {
+                    returnValue = Double.valueOf(backsite.getString(0));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return returnValue;
+    }
+
 
     private void zoneNorthingEasting(double Lat, double Lon){
         Zone= (int) Math.floor(Lon/6+31);
