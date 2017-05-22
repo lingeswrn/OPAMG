@@ -220,9 +220,15 @@ public class AddMeasurement extends AppCompatActivity {
                 }else if (getEOffset.equals("")){
                     e_offset.requestFocus();
                     e_offset.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getLSection.equals("")){
+                    l_section_offset.requestFocus();
+                    l_section_offset.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                }else if (getXSection.equals("")){
+                    x_section_offset.requestFocus();
+                    x_section_offset.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
                 }else if (getLayer.equals("")){
-                    search_layers.requestFocus();
-                    search_layers.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
+                    autoComplete.requestFocus();
+                    autoComplete.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
                 }else {
                     Log.e("Data",  "Valid");
                     calCoreCal();

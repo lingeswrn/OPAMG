@@ -87,8 +87,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/remarks"
                     android:id="@+id/remarks"
-                    android:layout_weight="2"
-                    android:inputType="numberDecimal"/>
+                    android:layout_weight="2"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,16 +99,66 @@
                     android:layout_height="40dp"
                     android:layout_weight="2"
                     android:background="@color/colorCommon"
-                    android:text="@string/add"
-                    android:textColor="@color/colorWhite"/>
+                    android:text="Done"
+                    android:textColor="@color/colorWhite"
+                    android:id="@+id/done"/>
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_weight="2"
                     android:background="@color/colorCommon"
-                    android:text="Done"
+                    android:text="@string/add"
                     android:textColor="@color/colorWhite"
-                    android:layout_marginLeft="5dp"/>
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/add"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp" >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/is_reading"
+                        android:textColor="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/chainage"
+                        android:textColor="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/offset"
+                        android:textColor="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Layer"
+                        android:textColor="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Action"
+                        android:textColor="@color/colorPrimary"/>
+                </LinearLayout>
+                <ListView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lstText"
+                    />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -99,6 +99,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("delete from "+ tableProjects);
     }
 
+    public void dropTable(String tableProjects){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE "+ tableProjects);
+    }
+
 
     // Adding new Project
     public void addProject(Project project) {
@@ -320,6 +325,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_MEASUREMENT);
     }
 
+    public void createCookieTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String CREATE_STAFF_READINGS = "CREATE TABLE IF NOT EXISTS cookie ( id INTEGER PRIMARY KEY, project_id TEXT, chainage TEXT, offset TEXT, is_reading TEXT, remarks TEXT, layer TEXT)";
+        db.execSQL(CREATE_STAFF_READINGS);
+    }
+
     public JSONArray getMeasurementByProjectId(int projectId ){
         String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " ORDER BY id DESC LIMIT 1";
         SQLiteDatabase db = this.getWritableDatabase();
@@ -377,12 +388,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
-        Log.e("Previous Date", String.valueOf(previousArray));
         cursor.close();
         return previousArray;
     }
 
-    // Adding new Layers
+    // Adding new Measurement
     public int addMeasurement(Measurement measurement) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -433,5 +443,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int id = (int) db.insert("measurement", null, values);
         db.close(); // Closing database connection
         return id;
+    }
+
+    // Adding Cookies
+    public long addCookie(String projectId, String getStrChainage, String getStrOffset, String getStrISReadings, String getRemarks, String getLayer) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("project_id", projectId);
+        values.put("chainage", getStrChainage);
+        values.put("offset", getStrOffset);
+        values.put("is_reading", getStrISReadings);
+        values.put("remarks", getRemarks);
+        values.put("layer", getLayer);
+        // Inserting Row
+        long latId = db.insert("cookie", null, values);
+        db.close(); // Closing database connection
+
+        return latId;
+    }
+
+    public JSONArray getAllCookie(String projectId ) {
+        String selectQuery = "SELECT * FROM cookie WHERE project_id = " + projectId;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray cookieArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject cookie = new JSONObject();
+                try {
+                    cookie.put("id", cursor.getString(0));
+                    cookie.put("project_id", cursor.getString(1));
+                    cookie.put("chainage", cursor.getString(2));
+                    cookie.put("offset", cursor.getString(3));
+                    cookie.put("is_reading", cursor.getString(4));
+                    cookie.put("remarks", cursor.getString(5));
+                    cookie.put("layer", cursor.getString(6));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                cookieArray.put(cookie);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return cookieArray;
     }
 }

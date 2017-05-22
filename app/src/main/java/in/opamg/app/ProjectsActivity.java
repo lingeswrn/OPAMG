@@ -230,7 +230,6 @@ public class ProjectsActivity extends AppCompatActivity {
         Gson gson = new Gson();
         JSONArray json = projArray;
         taskList = gson.fromJson(String.valueOf(json), new TypeToken<List<ProjectGetSet>>(){}.getType());
-        Log.e("taskList",""+taskList);
         AdapterAddressList = new ProjectListing(taskList);
         listProject.setAdapter(AdapterAddressList);
     }
@@ -369,7 +368,6 @@ public class ProjectsActivity extends AppCompatActivity {
         ArrayList<ProjectGetSet> projecctList = new ArrayList<ProjectGetSet>();
         @Override
         public int getCount() {
-
             return taskList.size();
             //return 10;
         }
