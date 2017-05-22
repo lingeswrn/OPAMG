@@ -186,7 +186,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
                 Intent intent = new Intent(MapActivity.this, AddMeasurement.class);
                 intent.putExtra("Latitude", ""+latitude);
                 intent.putExtra("Longitude", ""+longitude);
-                intent.putExtra("ProjectId", projectId);
+                //intent.putExtra("ProjectId", projectId);
                 startActivity(intent);
                 return false;
             }

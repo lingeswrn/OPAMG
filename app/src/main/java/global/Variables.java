@@ -13,7 +13,7 @@ public class Variables {
     //public static String API_URL = "http://192.168.0.103/alok/PHP/API/index.php?todo=";
     public static String API_URL = "http://alokmishra.co.in/sona/API/index.php?todo=";
     public static String MY_PREFS_NAME = "OPAMG";
-
+    public static String PROJECT_ID;
     //TODO
     public static String LOGIN = "login";
     public static String PROJECTS = "projects";

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import in.opamg.app.Models.Equipments;
 import in.opamg.app.Models.Layers;
+import in.opamg.app.Models.Measurement;
 import in.opamg.app.Models.Project;
 
 /**
@@ -140,6 +141,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Inserting Row
         db.insert(TABLE_EQUIPMENTS, null, values);
         db.close(); // Closing database connection
+    }
+
+    //Adding new GPS Co ordinates
+    public int addCoOrdinates(int lastId, String type, String s, String s1, String s2){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("measurement_id", lastId);
+        values.put("type", type);
+        values.put("deg", s);
+        values.put("min", s1);
+        values.put("sec", s2);
+
+        // Inserting Row
+        int co = (int) db.insert("gps_coordinates", null, values);
+        db.close(); // Closing database connection
+        return co;
+    }
+
+    //Adding Staff reading
+    public int addStaffReadings(int lastId, String s, String s1, String s2){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("measurement_id", lastId);
+        values.put("back_site", s);
+        values.put("intermediate_site", s1);
+        values.put("forward_site", s2);
+
+        // Inserting Row
+        int staffId = (int) db.insert("staff_readings", null, values);
+        db.close(); // Closing database connection
+        return staffId;
     }
 
     // Adding new Layers
@@ -276,13 +310,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void createMeasurementTables(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String CREATE_STAFF_READINGS = "CREATE TABLE IF NOT EXISTS staff_readings ( id INT PRIMARY KEY, measurement_id INT, back_site TEXT, intermediate_site TEXT, forward_site TEXT)";
+        String CREATE_STAFF_READINGS = "CREATE TABLE IF NOT EXISTS staff_readings ( id INTEGER PRIMARY KEY, measurement_id INT, back_site TEXT, intermediate_site TEXT, forward_site TEXT)";
         db.execSQL(CREATE_STAFF_READINGS);
 
-        String CREATE_GPS_COORDINATES = "CREATE TABLE IF NOT EXISTS staff_readings ( id INT PRIMARY KEY, measurement_id INT, type TEXT, deg TEXT, min TEXT, sec TEXT)";
+        String CREATE_GPS_COORDINATES = "CREATE TABLE IF NOT EXISTS gps_coordinates ( id INTEGER PRIMARY KEY, measurement_id INT, type TEXT, deg TEXT, min TEXT, sec TEXT)";
         db.execSQL(CREATE_GPS_COORDINATES);
 
-        String CREATE_MEASUREMENT = "CREATE TABLE IF NOT EXISTS measurement ( id INT PRIMARY KEY, project_id INT, equipement_id INT, layer_code TEXT, lattitude TEXT, longitude TEXT, utm_zone TEXT, utm_easting TEXT, utm_northing TEXT, angle_redians TEXT, cs_offset_e TEXT, cs_offset_n TEXT, el TEXT, mapping_ch TEXT, ch_by_auto_level TEXT, measurment_ch TEXT, gps_offset_length TEXT, bs_offset TEXT, is_offset TEXT, fs_offset TEXT, n_offset TEXT, e_offset TEXT, l_section_offset TEXT, x_section_offset TEXT, rise_plus TEXT, fall_minus TEXT, avg_hight_of_instrument_from_gl TEXT, hight_of_instrument TEXT, calculated_reduce_rl TEXT, checked_reduce_level TEXT, remarks TEXT, adj_rl TEXT, adjustment_error TEXT, tbm_rl TEXT, bs_angle TEXT, fs_angle TEXT, close_photograph TEXT, location_photograph TEXT, screen_shot TEXT, other_photograph TEXT, status INT, created_date TEXT )";
+        String CREATE_MEASUREMENT = "CREATE TABLE IF NOT EXISTS measurement ( id INTEGER PRIMARY KEY, project_id INT, equipement_id INT, layer_code TEXT, lattitude TEXT, longitude TEXT, utm_zone TEXT, utm_easting TEXT, utm_northing TEXT, angle_redians TEXT, cs_offset_e TEXT, cs_offset_n TEXT, el TEXT, mapping_ch TEXT, ch_by_auto_level TEXT, measurment_ch TEXT, gps_offset_length TEXT, bs_offset TEXT, is_offset TEXT, fs_offset TEXT, n_offset TEXT, e_offset TEXT, l_section_offset TEXT, x_section_offset TEXT, rise_plus TEXT, fall_minus TEXT, avg_hight_of_instrument_from_gl TEXT, hight_of_instrument TEXT, calculated_reduce_rl TEXT, checked_reduce_level TEXT, remarks TEXT, adj_rl TEXT, adjustment_error TEXT, tbm_rl TEXT, bs_angle TEXT, fs_angle TEXT, close_photograph TEXT, location_photograph TEXT, screen_shot TEXT, other_photograph TEXT, status INT, created_date TEXT )";
         db.execSQL(CREATE_MEASUREMENT);
     }
 
@@ -295,48 +329,49 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(cursor.moveToFirst()) {
             JSONObject prev = new JSONObject();
             try {
-                prev.put("id", cursor.getColumnIndex("id"));
-                prev.put("project_id", cursor.getColumnIndex("project_id"));
-                prev.put("equipement_id", cursor.getColumnIndex("equipement_id"));
-                prev.put("layer_code", cursor.getColumnIndex("layer_code"));
-                prev.put("lattitude", cursor.getColumnIndex("lattitude"));
-                prev.put("longitude", cursor.getColumnIndex("longitude"));
-                prev.put("utm_zone", cursor.getColumnIndex("utm_zone"));
-                prev.put("utm_easting", cursor.getColumnIndex("utm_easting"));
-                prev.put("utm_northing", cursor.getColumnIndex("utm_northing"));
-                prev.put("angle_redians", cursor.getColumnIndex("angle_redians"));
-                prev.put("cs_offset_e", cursor.getColumnIndex("cs_offset_e"));
-                prev.put("cs_offset_n", cursor.getColumnIndex("cs_offset_n"));
-                prev.put("el", cursor.getColumnIndex("el"));
-                prev.put("mapping_ch", cursor.getColumnIndex("mapping_ch"));
-                prev.put("ch_by_auto_level", cursor.getColumnIndex("ch_by_auto_level"));
-                prev.put("measurment_ch", cursor.getColumnIndex("measurment_ch"));
-                prev.put("gps_offset_length", cursor.getColumnIndex("gps_offset_length"));
-                prev.put("bs_offset", cursor.getColumnIndex("bs_offset"));
-                prev.put("is_offset", cursor.getColumnIndex("is_offset"));
-                prev.put("fs_offset", cursor.getColumnIndex("fs_offset"));
-                prev.put("n_offset", cursor.getColumnIndex("n_offset"));
-                prev.put("e_offset", cursor.getColumnIndex("e_offset"));
-                prev.put("l_section_offset", cursor.getColumnIndex("l_section_offset"));
-                prev.put("x_section_offset", cursor.getColumnIndex("x_section_offset"));
-                prev.put("rise_plus", cursor.getColumnIndex("rise_plus"));
-                prev.put("fall_minus", cursor.getColumnIndex("fall_minus"));
-                prev.put("avg_hight_of_instrument_from_gl", cursor.getColumnIndex("avg_hight_of_instrument_from_gl"));
-                prev.put("hight_of_instrument", cursor.getColumnIndex("hight_of_instrument"));
-                prev.put("calculated_reduce_rl", cursor.getColumnIndex("calculated_reduce_rl"));
-                prev.put("checked_reduce_level", cursor.getColumnIndex("checked_reduce_level"));
-                prev.put("remarks", cursor.getColumnIndex("remarks"));
-                prev.put("adj_rl", cursor.getColumnIndex("adj_rl"));
-                prev.put("adjustment_error", cursor.getColumnIndex("adjustment_error"));
-                prev.put("tbm_rl", cursor.getColumnIndex("tbm_rl"));
-                prev.put("bs_angle", cursor.getColumnIndex("bs_angle"));
-                prev.put("fs_angle", cursor.getColumnIndex("fs_angle"));
-                prev.put("close_photograph", cursor.getColumnIndex("close_photograph"));
-                prev.put("location_photograph", cursor.getColumnIndex("location_photograph"));
-                prev.put("screen_shot", cursor.getColumnIndex("screen_shot"));
-                prev.put("other_photograph", cursor.getColumnIndex("other_photograph"));
-                prev.put("status", cursor.getColumnIndex("status"));
-                prev.put("created_date", cursor.getColumnIndex("created_date"));
+
+                prev.put("id", cursor.getString(0));
+                prev.put("project_id", cursor.getString(1));
+                prev.put("equipement_id", cursor.getString(2));
+                prev.put("layer_code", cursor.getString(3));
+                prev.put("lattitude", cursor.getString(4));
+                prev.put("longitude", cursor.getString(5));
+                prev.put("utm_zone", cursor.getString(6));
+                prev.put("utm_easting", cursor.getString(7));
+                prev.put("utm_northing", cursor.getString(8));
+                prev.put("angle_redians", cursor.getString(9));
+                prev.put("cs_offset_e", cursor.getString(10));
+                prev.put("cs_offset_n", cursor.getString(11));
+                prev.put("el", cursor.getString(12));
+                prev.put("mapping_ch", cursor.getString(13));
+                prev.put("ch_by_auto_level", cursor.getString(14));
+                prev.put("measurment_ch", cursor.getString(15));
+                prev.put("gps_offset_length", cursor.getString(16));
+                prev.put("bs_offset", cursor.getString(17));
+                prev.put("is_offset", cursor.getString(18));
+                prev.put("fs_offset", cursor.getString(19));
+                prev.put("n_offset", cursor.getString(20));
+                prev.put("e_offset", cursor.getString(21));
+                prev.put("l_section_offset", cursor.getString(22));
+                prev.put("x_section_offset", cursor.getString(23));
+                prev.put("rise_plus", cursor.getString(24));
+                prev.put("fall_minus", cursor.getString(25));
+                prev.put("avg_hight_of_instrument_from_gl", cursor.getString(26));
+                prev.put("hight_of_instrument", cursor.getString(27));
+                prev.put("calculated_reduce_rl", cursor.getString(28));
+                prev.put("checked_reduce_level", cursor.getString(29));
+                prev.put("remarks", cursor.getString(30));
+                prev.put("adj_rl", cursor.getString(31));
+                prev.put("adjustment_error", cursor.getString(32));
+                prev.put("tbm_rl", cursor.getString(33));
+                prev.put("bs_angle", cursor.getString(34));
+                prev.put("fs_angle", cursor.getString(35));
+                prev.put("close_photograph", cursor.getString(36));
+                prev.put("location_photograph", cursor.getString(37));
+                prev.put("screen_shot", cursor.getString(38));
+                prev.put("other_photograph", cursor.getString(39));
+                prev.put("status", cursor.getString(40));
+                prev.put("created_date", cursor.getString(41));
                 previousArray.put(prev);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -345,5 +380,58 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.e("Previous Date", String.valueOf(previousArray));
         cursor.close();
         return previousArray;
+    }
+
+    // Adding new Layers
+    public int addMeasurement(Measurement measurement) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        Log.e("proj", String.valueOf(measurement.get_project_id()));
+        values.put("project_id", measurement.get_project_id());
+        values.put("equipement_id", measurement.get_equipement_id());
+        values.put("layer_code", measurement.get_layer_code());
+        values.put("lattitude", measurement.get_lattitude());
+        values.put("longitude", measurement.get_longitude());
+        values.put("utm_zone", measurement.get_utm_zone());
+        values.put("utm_easting", measurement.get_utm_easting());
+        values.put("utm_northing", measurement.get_utm_northing());
+        values.put("angle_redians", measurement.get_angle_redians());
+        values.put("cs_offset_e", measurement.get_cs_offset_e());
+        values.put("cs_offset_n", measurement.get_cs_offset_n());
+        values.put("el", measurement.get_el());
+        values.put("mapping_ch", measurement.get_mapping_ch());
+        values.put("ch_by_auto_level", measurement.get_ch_by_auto_level());
+        values.put("measurment_ch", measurement.get_measurment_ch());
+        values.put("gps_offset_length", measurement.get_gps_offset_length());
+        values.put("bs_offset", measurement.get_bs_offset());
+        values.put("is_offset", measurement.get_is_offset());
+        values.put("fs_offset", measurement.get_fs_offset());
+        values.put("n_offset", measurement.get_n_offset());
+        values.put("e_offset", measurement.get_e_offset());
+        values.put("l_section_offset", measurement.get_l_section_offset());
+        values.put("x_section_offset", measurement.get_x_section_offset());
+        values.put("rise_plus", measurement.get_rise_plus());
+        values.put("fall_minus", measurement.get_fall_minus());
+        values.put("avg_hight_of_instrument_from_gl", measurement.get_avg_hight_of_instrument_from_gl());
+        values.put("hight_of_instrument", measurement.get_hight_of_instrument());
+        values.put("calculated_reduce_rl", measurement.get_calculated_reduce_rl());
+        values.put("checked_reduce_level", measurement.get_checked_reduce_level());
+        values.put("remarks", measurement.get_remarks());
+        values.put("adj_rl", measurement.get_adj_rl());
+        values.put("adjustment_error", measurement.get_adjustment_error());
+        values.put("tbm_rl", measurement.get_tbm_rl());
+        values.put("bs_angle", measurement.get_bs_angle());
+        values.put("fs_angle", measurement.get_fs_angle());
+        values.put("close_photograph", measurement.get_close_photograph());
+        values.put("location_photograph", measurement.get_close_photograph());
+        values.put("screen_shot", measurement.get_screen_shot());
+        values.put("other_photograph", measurement.get_other_photograph());
+        values.put("status", measurement.get_status());
+        values.put("created_date", measurement.get_created_date());
+        // Inserting Row
+        int id = (int) db.insert("measurement", null, values);
+        db.close(); // Closing database connection
+        return id;
     }
 }

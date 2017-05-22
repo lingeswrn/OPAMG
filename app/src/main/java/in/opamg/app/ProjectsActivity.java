@@ -415,7 +415,8 @@ public class ProjectsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(ProjectsActivity.this, MapActivity.class);
-                    i.putExtra("PROJECT_ID", list.getId());
+                    Variables.PROJECT_ID = list.getId();
+                    //i.putExtra("PROJECT_ID", list.getId());
                     startActivity(i);
                 }
             });

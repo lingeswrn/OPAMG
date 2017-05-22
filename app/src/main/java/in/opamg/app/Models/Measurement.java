@@ -45,13 +45,9 @@ public class Measurement {
 	int _status;
 	String _created_date;
 
-	// Empty constructor
-	public Measurement() {
-
-	}
 
 	// constructor
-	public Measurement(int id, int project_id, int equipement_id, String layer_code,
+	public Measurement(int project_id, int equipement_id, String layer_code,
 					   String lattitude, String longitude, String utm_zone, String utm_easting,
 					   String utm_northing, String angle_redians, String cs_offset_e, String cs_offset_n,
 						String el, String mapping_ch, String ch_by_auto_level, String measurment_ch, String gps_offset_length,
@@ -61,7 +57,7 @@ public class Measurement {
 					   String checked_reduce_level, String remarks, String adj_rl, String adjustment_error, String tbm_rl,
 					   String bs_angle, String fs_angle, String close_photograph, String location_photograph,
 					   String screen_shot, String other_photograph, int status, String created_date){
-		this._id = id;
+
 		this._project_id = project_id;
 		this._equipement_id = equipement_id;
 		this._layer_code = layer_code;

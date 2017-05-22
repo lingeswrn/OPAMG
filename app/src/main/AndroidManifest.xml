@@ -13,7 +13,6 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo"
@@ -50,7 +49,8 @@
         <activity
             android:name=".MapActivity"
             android:label="@string/title_activity_add_measurement" />
-        <activity android:name=".AddMeasurement"></activity>
+        <activity android:name=".AddMeasurement" />
+        <activity android:name=".AddManualData"></activity>
     </application>
 
 </manifest>

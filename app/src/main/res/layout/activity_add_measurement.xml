@@ -258,6 +258,23 @@
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:id="@+id/linAddManual"
+                android:visibility="gone">
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="6"
+                    android:background="@color/colorCommon"
+                    android:textColor="@color/colorWhite"
+                    android:text="@string/add"
+                    android:id="@+id/addManual"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <LinearLayout
@@ -381,7 +398,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:id="@+id/linEqui"
-                    android:visibility="gone">
+                    android:visibility="visible">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -407,7 +424,7 @@
                                 android:textSize="10sp"
                                 android:id="@+id/equipmentId"
                                 android:editable="false"
-                                android:visibility="gone"/>
+                                android:visibility="visible"/>
 
                             <EditText
                                 android:id="@+id/last_calibration_service_center"
@@ -504,8 +521,7 @@
                             android:layout_weight="4"
                             android:hint="@string/adj_rl"
                             android:textSize="12sp"
-                            android:id="@+id/adj_rl"
-                            android:inputType="numberDecimal"/>
+                            android:id="@+id/adj_rl"/>
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -528,18 +544,23 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="4"
+                            android:hint="@string/remarks"
+                            android:textSize="12sp"
+                            android:id="@+id/remarks"/>
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
                             android:hint="@string/bs_angle"
                             android:textSize="12sp"
-                            android:id="@+id/bs_angle"
-                            android:inputType="numberDecimal"/>
+                            android:id="@+id/bs_angle"/>
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="4"
                             android:hint="@string/fs_angle"
                             android:textSize="12sp"
-                            android:id="@+id/fs_angle"
-                            android:inputType="numberDecimal"/>
+                            android:id="@+id/fs_angle"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

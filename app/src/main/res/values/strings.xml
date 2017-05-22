@@ -57,4 +57,10 @@
     <string name="bs_angle">BS Angle</string>
     <string name="fs_angle">FS Angle</string>
     <string name="save">SAVE</string>
+
+    <!-- MANUAL DATA -->
+    <string name="add_manual_data">Add Manual Data</string>
+    <string name="chainage">Chainage</string>
+    <string name="offset">Offset</string>
+    <string name="is_reading">IS Reading</string>
 </resources>
