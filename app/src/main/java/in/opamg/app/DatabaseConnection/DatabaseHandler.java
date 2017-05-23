@@ -491,4 +491,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return cookieArray;
     }
+
+    public void deleteCookie(String cookieeId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from cookie where id = "+cookieeId);
+    }
 }

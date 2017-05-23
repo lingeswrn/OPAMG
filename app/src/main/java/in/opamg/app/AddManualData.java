@@ -47,7 +47,7 @@ public class AddManualData extends AppCompatActivity {
     ListView lstText;
     ArrayList<CookieGetSet> cookieList = new ArrayList<CookieGetSet>();
     CookieListing AdapterCookieList;
-
+    JSONArray allCookies = new JSONArray();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +96,7 @@ public class AddManualData extends AppCompatActivity {
                         remarks.setText("");
                         search_layers.setText("");
                         Toast.makeText(AddManualData.this, "Added Successfully!", Toast.LENGTH_SHORT).show();
+                        getCookiedata();
                     }else{
                         Toast.makeText(AddManualData.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
                     }
@@ -115,7 +116,7 @@ public class AddManualData extends AppCompatActivity {
 
     private void getCookiedata() {
         db.createCookieTable();
-        JSONArray allCookies = db.getAllCookie( projectId );
+        allCookies = db.getAllCookie( projectId );
         Log.e("allCookies", String.valueOf(allCookies));
 
         Gson gson = new Gson();
@@ -154,7 +155,7 @@ public class AddManualData extends AppCompatActivity {
         @Override
         public int getCount() {
             return cookieList.size();
-            //return 10;
+            //return 3;
         }
         public CookieListing(ArrayList<CookieGetSet> taskList) {
             this.projecctList = taskList;
@@ -204,9 +205,8 @@ public class AddManualData extends AppCompatActivity {
             holder.delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    db.deleteCookie( list.getId() );
                     getCookiedata();
-                    Log.e("id", list.getId());
                 }
             });
             return convertView;
