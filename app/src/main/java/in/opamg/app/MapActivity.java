@@ -43,6 +43,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     private GoogleMap mMap;
     protected GoogleApiClient mGoogleApiClient;
     String projectId;
+    MarkerOptions markerOptions;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,37 +164,72 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             return;
         }
         mMap.setMyLocationEnabled(true);
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            @Override
-            public void onMapClick(LatLng point) {
-                mMap.clear();
-                MarkerOptions markerOptions = new MarkerOptions();
-                float zoomLevel = (float) 16.00;
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-                markerOptions.position(point);
-                markerOptions.draggable(true);
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
-                mMap.addMarker(markerOptions);
-                Toast.makeText(getBaseContext(), "Marker is added to the Map", Toast.LENGTH_SHORT).show();
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String bestProvider = locationManager.getBestProvider(criteria, true);
+        Location locationss = locationManager.getLastKnownLocation(bestProvider);
+        Log.e("locationss" , String.valueOf(locationss));
 
-            }
-        });
+        //if( !String.valueOf(locationss).equalsIgnoreCase("null")) {
+            latitude = locationss.getLatitude();
+            longitude = locationss.getLongitude();
+            latLng = new LatLng(latitude, longitude);
+
+            markerOptions = new MarkerOptions();
+            float zoomLevel = (float) 16.00;
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            markerOptions.position(latLng);
+        markerOptions.title("move");
+            markerOptions.draggable(true);
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
+            mMap.addMarker(markerOptions);
+        //}
+
+//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+//
+//            @Override
+//            public void onMapClick(LatLng point) {
+//                mMap.clear();
+//                MarkerOptions markerOptions = new MarkerOptions();
+//                float zoomLevel = (float) 16.00;
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+//                markerOptions.position(point);
+//                markerOptions.draggable(true);
+//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
+//                mMap.addMarker(markerOptions);
+//                Toast.makeText(getBaseContext(), "Marker is added to the Map", Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Intent intent = new Intent(MapActivity.this, AddMeasurement.class);
-                intent.putExtra("Latitude", ""+latitude);
-                intent.putExtra("Longitude", ""+longitude);
-                //intent.putExtra("ProjectId", projectId);
-                startActivity(intent);
+                if( marker.getTitle().toString().equals("move")){
+                    Intent intent = new Intent(MapActivity.this, AddMeasurement.class);
+                    intent.putExtra("Latitude", ""+latitude);
+                    intent.putExtra("Longitude", ""+longitude);
+                    //intent.putExtra("ProjectId", projectId);
+                    startActivity(intent);
+                }
+
                 return false;
             }
         });
+
+        createMarker( 12.9748534, 77.6364297, "tsest", "thi si s sdasd");
     }
 
-
+    protected Marker createMarker(double latitude, double longitude, String title, String snippet) {
+        return mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .anchor(0.5f, 0.5f)
+                .title(title)
+                .snippet(snippet));
+                //.icon(BitmapDescriptorFactory.fromResource(iconResID)));
+    }
 
 
 }

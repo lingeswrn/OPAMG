@@ -3,15 +3,20 @@ package in.opamg.app;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +62,10 @@ public class ProjectsActivity extends AppCompatActivity {
     DatabaseHandler db;
     private static final int PERMISSION_REQUEST_CODE = 1337;
     private View view;
+    private LocationManager locationManager;
+    private String provider;
+    boolean gps_enabled = false;
+    boolean network_enabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +83,45 @@ public class ProjectsActivity extends AppCompatActivity {
         String name = prefs.getString(Variables.SESSION_NAME, "");
         String mobile = prefs.getString(Variables.SESSION_MOBILE, "");
         String email = prefs.getString(Variables.SESSION_EMAIL, "");
+
+        // Get the location manager
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Define the criteria how to select the locatioin provider -> use
+        // default
+        Criteria criteria = new Criteria();
+        provider = locationManager.getBestProvider(criteria, false);
+        try {
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        try {
+            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+
+        }
+        if (!gps_enabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(ProjectsActivity.this);
+            dialog.setCancelable(false);
+            dialog.setMessage(ProjectsActivity.this.getResources().getString(R.string.gps_network_not_enabled));
+            dialog.setPositiveButton(ProjectsActivity.this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    ProjectsActivity.this.startActivity(myIntent);
+                    //get gps
+                }
+            });
+
+            dialog.show();
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
 
         addProject.setOnClickListener(new View.OnClickListener() {
             @Override
