@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +29,17 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.BubbleIconFactory;
+import com.google.maps.android.ui.IconGenerator;
 
-public class MapActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import global.Variables;
+import in.opamg.app.DatabaseConnection.DatabaseHandler;
+
+public class MapActivity extends FragmentActivity implements LocationListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
     private TextView latituteField;
     private TextView longitudeField;
     private LocationManager locationManager;
@@ -44,11 +55,16 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     protected GoogleApiClient mGoogleApiClient;
     String projectId;
     MarkerOptions markerOptions;
+    DatabaseHandler db;
+    Boolean markerCheck = true;
+    Marker addedMarker;
+    Double getLatitude, getLongitude;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        db = new DatabaseHandler(this);
 
         projectId = getIntent().getStringExtra("PROJECT_ID");
         // Get the location manager
@@ -157,60 +173,65 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        getLatitude = marker.getPosition().latitude;
+        getLongitude = marker.getPosition().longitude;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },      LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
             return;
         }
         mMap.setMyLocationEnabled(true);
-
+        mMap.setOnMarkerDragListener(this);
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
         Location locationss = locationManager.getLastKnownLocation(bestProvider);
-        Log.e("locationss" , String.valueOf(locationss));
 
-        //if( !String.valueOf(locationss).equalsIgnoreCase("null")) {
-            latitude = locationss.getLatitude();
-            longitude = locationss.getLongitude();
-            latLng = new LatLng(latitude, longitude);
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            markerOptions = new MarkerOptions();
-            float zoomLevel = (float) 16.00;
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            markerOptions.position(latLng);
-        markerOptions.title("move");
-            markerOptions.draggable(true);
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
-            mMap.addMarker(markerOptions);
-        //}
+            @Override
+            public void onMapClick(LatLng point) {
+                if( markerCheck ){
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    float zoomLevel = (float) 16.00;
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+                    markerOptions.position(point);
+                    markerOptions.title("move");
+                    markerOptions.draggable(true);
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
+                    mMap.addMarker(markerOptions);
+                    markerCheck = false;
+                }
+               // mMap.clear();
 
-//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-//
-//            @Override
-//            public void onMapClick(LatLng point) {
-//                mMap.clear();
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                float zoomLevel = (float) 16.00;
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-//                markerOptions.position(point);
-//                markerOptions.draggable(true);
-//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
-//                mMap.addMarker(markerOptions);
-//                Toast.makeText(getBaseContext(), "Marker is added to the Map", Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
+
+            }
+        });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+
                 if( marker.getTitle().toString().equals("move")){
                     Intent intent = new Intent(MapActivity.this, AddMeasurement.class);
-                    intent.putExtra("Latitude", ""+latitude);
-                    intent.putExtra("Longitude", ""+longitude);
+                    intent.putExtra("Latitude", ""+getLatitude );
+                    intent.putExtra("Longitude", ""+getLongitude );
                     //intent.putExtra("ProjectId", projectId);
                     startActivity(intent);
                 }
@@ -219,16 +240,31 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             }
         });
 
-        createMarker( 12.9748534, 77.6364297, "tsest", "thi si s sdasd");
+        JSONArray LatLng = db.getLatLng( Variables.PROJECT_ID );
+        Log.e("LatLng", String.valueOf(LatLng));
+        for(int i = 0; i < LatLng.length(); i++) {
+            Double getLat = null, getLong = null;
+            try {
+                JSONObject LatLngJson = LatLng.getJSONObject(i);
+                getLat = Double.parseDouble(LatLngJson.getString("latitude"));
+                getLong = Double.parseDouble(LatLngJson.getString("longitude"));
+                Log.e("getLat", String.valueOf(getLat));
+                Log.e("getLong", String.valueOf(getLong));
+                createMarker(getLat, getLong, i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
-    protected Marker createMarker(double latitude, double longitude, String title, String snippet) {
-        return mMap.addMarker(new MarkerOptions()
+    protected Marker createMarker(double latitude, double longitude, int i) {
+        Marker added = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .anchor(0.5f, 0.5f)
-                .title(title)
-                .snippet(snippet));
-                //.icon(BitmapDescriptorFactory.fromResource(iconResID)));
+                .title(String.valueOf(i + 1)));
+        added.showInfoWindow();
+        return added;
     }
 
 

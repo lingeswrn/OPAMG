@@ -496,4 +496,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from cookie where id = "+cookieeId);
     }
+
+    public JSONArray getLatLng(String projectId ) {
+
+        String selectQuery = "SELECT lattitude, longitude FROM measurement WHERE project_id = " + projectId;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray latlngArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject latlng = new JSONObject();
+                try {
+                    latlng.put("latitude", cursor.getString(0));
+                    latlng.put("longitude", cursor.getString(1));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                latlngArray.put(latlng);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return latlngArray;
+    }
 }
