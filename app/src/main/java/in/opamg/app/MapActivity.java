@@ -29,8 +29,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.ui.BubbleIconFactory;
-import com.google.maps.android.ui.IconGenerator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -209,14 +207,16 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onMapClick(LatLng point) {
                 if( markerCheck ){
                     MarkerOptions markerOptions = new MarkerOptions();
-                    float zoomLevel = (float) 16.00;
+                    float zoomLevel = (float) 21.00;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
                     markerOptions.position(point);
                     markerOptions.title("move");
                     markerOptions.draggable(true);
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin));
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_pin));
                     mMap.addMarker(markerOptions);
+                    getLatitude = point.latitude;
+                    getLongitude = point.longitude;
                     markerCheck = false;
                 }
                // mMap.clear();
@@ -244,13 +244,16 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         Log.e("LatLng", String.valueOf(LatLng));
         for(int i = 0; i < LatLng.length(); i++) {
             Double getLat = null, getLong = null;
+            String layercode = "";
+
             try {
                 JSONObject LatLngJson = LatLng.getJSONObject(i);
                 getLat = Double.parseDouble(LatLngJson.getString("latitude"));
                 getLong = Double.parseDouble(LatLngJson.getString("longitude"));
+                layercode = LatLngJson.getString("layer_code");
                 Log.e("getLat", String.valueOf(getLat));
                 Log.e("getLong", String.valueOf(getLong));
-                createMarker(getLat, getLong, i);
+                createMarker(getLat, getLong, i, layercode);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -258,11 +261,52 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         }
     }
 
-    protected Marker createMarker(double latitude, double longitude, int i) {
-        Marker added = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title(String.valueOf(i + 1)));
+    protected Marker createMarker(double latitude, double longitude, int i, String layercodes) {
+        Marker added = null;
+        if (layercodes.equalsIgnoreCase("OCC")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_occ))
+                    .title(String.valueOf(i + 1)));
+        }else if (layercodes.equalsIgnoreCase("BS")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_bs))
+                    .title(String.valueOf(i + 1)));
+        }else if (layercodes.equalsIgnoreCase("FS")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_fs))
+                    .title(String.valueOf(i + 1)));
+        }else if (layercodes.equalsIgnoreCase("BM")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_bm))
+                    .title(String.valueOf(i + 1)));
+        }else if (layercodes.equalsIgnoreCase("TBM")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tbm))
+                    .title(String.valueOf(i + 1)));
+        }else if (layercodes.equalsIgnoreCase("CH")){
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_ch))
+                    .title(String.valueOf(i + 1)));
+        }else {
+            added = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_re))
+                    .title(String.valueOf(i + 1)));
+        }
+        
         added.showInfoWindow();
         return added;
     }

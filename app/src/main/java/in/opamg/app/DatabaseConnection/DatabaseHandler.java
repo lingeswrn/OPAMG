@@ -499,7 +499,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public JSONArray getLatLng(String projectId ) {
 
-        String selectQuery = "SELECT lattitude, longitude FROM measurement WHERE project_id = " + projectId;
+        String selectQuery = "SELECT lattitude, longitude, layer_code FROM measurement WHERE project_id = " + projectId;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -510,6 +510,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 try {
                     latlng.put("latitude", cursor.getString(0));
                     latlng.put("longitude", cursor.getString(1));
+                    latlng.put("layer_code", cursor.getString(2));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
