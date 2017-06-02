@@ -391,7 +391,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return previousArray;
     }
-
     // Adding new Measurement
     public int addMeasurement(Measurement measurement) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -444,7 +443,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
         return id;
     }
-
     // Adding Cookies
     public long addCookie(String projectId, String getStrChainage, String getStrOffset, String getStrISReadings, String getRemarks, String getLayer) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -521,5 +519,117 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         cursor.close();
         return latlngArray;
+    }
+
+    public JSONArray getAllMeasurementByProjectId(String projectId){
+        String selectQuery = "SELECT t.* , staff_readings.back_site, staff_readings.intermediate_site,staff_readings.forward_site FROM  `measurement` AS t LEFT OUTER JOIN staff_readings ON t.id = staff_readings.measurement_id\n" +
+                "WHERE t.project_id = " + projectId;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray allMeasurementsArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject allMeasurementObj = new JSONObject();
+                JSONArray coordinatesArray = new JSONArray();
+                JSONArray staffReadingArray = new JSONArray();
+                try {
+                    allMeasurementObj.put("id", cursor.getString(0));
+                    allMeasurementObj.put("project_id", cursor.getString(1));
+                    allMeasurementObj.put("equipement_id", cursor.getString(2));
+                    allMeasurementObj.put("layer_code", cursor.getString(3));
+                    allMeasurementObj.put("lattitude", cursor.getString(4));
+                    allMeasurementObj.put("longitude", cursor.getString(5));
+                    allMeasurementObj.put("utm_zone", cursor.getString(6));
+                    allMeasurementObj.put("utm_easting", cursor.getString(7));
+                    allMeasurementObj.put("utm_northing", cursor.getString(8));
+                    allMeasurementObj.put("angle_redians", cursor.getString(9));
+                    allMeasurementObj.put("cs_offset_e", cursor.getString(10));
+                    allMeasurementObj.put("cs_offset_n", cursor.getString(11));
+                    allMeasurementObj.put("el", cursor.getString(12));
+                    allMeasurementObj.put("mapping_ch", cursor.getString(13));
+                    allMeasurementObj.put("ch_by_auto_level", cursor.getString(14));
+                    allMeasurementObj.put("measurment_ch", cursor.getString(15));
+                    allMeasurementObj.put("gps_offset_length", cursor.getString(16));
+                    allMeasurementObj.put("bs_offset", cursor.getString(17));
+                    allMeasurementObj.put("is_offset", cursor.getString(18));
+                    allMeasurementObj.put("fs_offset", cursor.getString(19));
+                    allMeasurementObj.put("n_offset", cursor.getString(20));
+                    allMeasurementObj.put("e_offset", cursor.getString(21));
+                    allMeasurementObj.put("l_section_offset", cursor.getString(22));
+                    allMeasurementObj.put("x_section_offset", cursor.getString(23));
+                    allMeasurementObj.put("rise_plus", cursor.getString(24));
+                    allMeasurementObj.put("fall_minus", cursor.getString(25));
+                    allMeasurementObj.put("avg_hight_of_instrument_from_gl", cursor.getString(26));
+                    allMeasurementObj.put("hight_of_instrument", cursor.getString(27));
+                    allMeasurementObj.put("calculated_reduce_rl", cursor.getString(28));
+                    allMeasurementObj.put("checked_reduce_level", cursor.getString(29));
+                    allMeasurementObj.put("remarks", cursor.getString(30));
+                    allMeasurementObj.put("adj_rl", cursor.getString(31));
+                    allMeasurementObj.put("adjustment_error", cursor.getString(32));
+                    allMeasurementObj.put("tbm_rl", cursor.getString(33));
+                    allMeasurementObj.put("bs_angle", cursor.getString(34));
+                    allMeasurementObj.put("fs_angle", cursor.getString(35));
+                    allMeasurementObj.put("close_photograph", cursor.getString(36));
+                    allMeasurementObj.put("location_photograph", cursor.getString(37));
+                    allMeasurementObj.put("screen_shot", cursor.getString(38));
+                    allMeasurementObj.put("other_photograph", cursor.getString(39));
+                    allMeasurementObj.put("status", cursor.getString(40));
+                    allMeasurementObj.put("created_date", cursor.getString(41));
+                    allMeasurementObj.put("back_site", cursor.getString(42));
+                    allMeasurementObj.put("intermediate_site", cursor.getString(43));
+                    allMeasurementObj.put("forward_site", cursor.getString(44));
+
+                    coordinatesArray = getAlLCoOrdinates( cursor.getString(0) );
+                    allMeasurementObj.put("coordinates", coordinatesArray);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if( coordinatesArray.length() > 0 )
+                    allMeasurementsArray.put(allMeasurementObj);
+            } while (cursor.moveToNext());
+        }
+        Log.e("All", String.valueOf(allMeasurementsArray));
+        cursor.close();
+        return allMeasurementsArray;
+    }
+
+    public JSONArray getAlLCoOrdinates( String measurementId){
+        String selectQuery = "SELECT * FROM gps_coordinates WHERE measurement_id = " + measurementId;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray latlngArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject latlng = new JSONObject();
+                try {
+                    latlng.put("type", cursor.getString(2));
+                    latlng.put("deg", cursor.getString(3));
+                    latlng.put("min", cursor.getString(4));
+                    latlng.put("sec", cursor.getString(5));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                latlngArray.put(latlng);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return latlngArray;
+    }
+
+    public void deleteMeasurement(String projectId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from measurement WHERE project_id ="+ projectId);
+    }
+
+    public void deleteCookieByProjectId(String projectId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from cookie WHERE project_id ="+ projectId);
     }
 }

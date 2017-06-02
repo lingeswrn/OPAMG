@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -65,6 +66,7 @@ public class AddMeasurement extends AppCompatActivity {
     Double previous_ch_by_auto_level, previous_hight_of_instrument, previous_measurment_ch, chByAutoLevel, checkedReduceLevel, getTBM_RL, reduceLevel, heightOfInstrument, avgHeightOfInstrument, adjustmentError, angleRedians;
     Double previous_utm_easting, previous_utm_northing, cs_offset_easting, cs_offset_northing;
     String getLSection, getXSection, getLatDMS, getLongDMS, getZone, getEL, getRemarks, getADJRl, getBSAngle, getFSAngle;
+    ImageView backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class AddMeasurement extends AppCompatActivity {
         linTitle = (LinearLayout) findViewById(R.id.linTitle);
         linEqui = (LinearLayout) findViewById(R.id.linEqui);
         linAddManual = (LinearLayout) findViewById(R.id.linAddManual);
+        backBtn = (ImageView) findViewById(R.id.backBtn);
 
 
         latDms      = (EditText) findViewById(R.id.latDMS);
@@ -230,9 +233,249 @@ public class AddMeasurement extends AppCompatActivity {
                     autoComplete.requestFocus();
                     autoComplete.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
                 }else {
-                    Log.e("Data",  "Valid");
-                    calCoreCal();
+                    //calCoreCal();
+                    JSONArray allCookiee = db.getAllCookie(Variables.PROJECT_ID);
+                    if( allCookiee.length() == 0 ){
+                        calCoreCal();
+                    }else {
+                        Double manualLastEasting, manualLastNorthing, temp ,temp1, temp2, temp3, first_half, temp4;
+                        try {
+                            temp = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                            temp1 = getEasting * temp;
+                            temp2 = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) * Double.parseDouble(previosDataJSON.getString("utm_easting"));
+                            temp3 = getMappingCh - temp2;
+                            first_half = temp1 + temp3;
+                            temp4 = getMappingCh - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                            manualLastEasting = first_half / temp4;
+                            Log.e("manualLastEasting", String.valueOf(manualLastEasting));
+
+                            temp = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                            temp1 = getNorthing * temp;
+                            temp2 = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) * Double.parseDouble(previosDataJSON.getString("utm_northing"));
+                            temp3 = getMappingCh - temp2;
+                            first_half = temp1 + temp3;
+                            temp4 = getMappingCh - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                            manualLastNorthing = first_half / temp4;
+                            Log.e("manualLastNorthing", String.valueOf(manualLastNorthing));
+
+                            if( manualLastEasting > 0 && manualLastNorthing > 0 ){
+                                Double t, t1,t3;
+                                t = getNorthing - manualLastNorthing;
+                                t1 = getEasting - manualLastEasting;
+                                t3 = t / t1;
+                                angleRedians = Math.atan(t3);
+                            }else {
+                                angleRedians = 0.000;
+                            }
+
+                            for( int i = 0; i < allCookiee.length(); i++){
+                                Double man_cs_offset_easting, man_cs_offset_northing, man_bsoffset, man_isoffset, man_fsoffset;
+                                Double ManbsOffsetMean, ManfsOffsetMean, ManisOffsetMean, manrisePlus, manfallMinus, manchByAutoLevel, mancheckedReduceLevel;
+                                Double manreduceLevel, manheightOfInstrument, manavgHeightOfInstrument;
+
+                                JSONArray intermediatesite = new JSONArray();
+                                JSONArray backsite = new JSONArray();
+                                JSONArray foresite = new JSONArray();
+                                JSONArray tempArray = new JSONArray();
+                                tempArray.put("0.00");
+                                tempArray.put("0.00");
+
+                                temp = Double.parseDouble(allCookiee.getJSONObject(i).getString("chainage")) - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                                temp1 = getEasting * temp;
+                                temp2 = Double.parseDouble(allCookiee.getJSONObject(i).getString("chainage")) * Double.parseDouble(previosDataJSON.getString("utm_easting"));
+                                temp3 = getMappingCh - temp2;
+                                first_half = temp1 + temp3;
+                                temp4 = getMappingCh - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                                manualLastEasting = first_half / temp4;
+                                Log.e("manualLastEasting", String.valueOf(manualLastEasting));
+
+                                temp = Double.parseDouble(allCookiee.getJSONObject(i).getString("chainage")) - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                                temp1 = getNorthing * temp;
+                                temp2 = Double.parseDouble(allCookiee.getJSONObject(i).getString("chainage")) * Double.parseDouble(previosDataJSON.getString("utm_northing"));
+                                temp3 = getMappingCh - temp2;
+                                first_half = temp1 + temp3;
+                                temp4 = getMappingCh - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                                manualLastNorthing = first_half / temp4;
+                                Log.e("manualLastNorthing", String.valueOf(manualLastNorthing));
+
+                                intermediatesite.put(allCookiee.getJSONObject(i).getString("is_reading"));
+                                backsite.put("");
+                                foresite.put("");
+
+                                // Easting
+                                if( angleRedians > 0 ){
+                                    temp = Math.sin(angleRedians) * Double.parseDouble(allCookiee.getJSONObject(i).getString("offset"));
+                                    man_cs_offset_easting = manualLastEasting + temp;
+                                }else{
+                                    temp = Math.sin(angleRedians) * Double.parseDouble(allCookiee.getJSONObject(i).getString("offset"));
+                                    man_cs_offset_easting = manualLastEasting - temp;
+                                }
+
+                                Log.e("man_cs_offset_easting", String.valueOf(man_cs_offset_easting));
+                                // Northing
+                                if( angleRedians > 0 ){
+                                    temp = Math.sin(angleRedians) * Double.parseDouble(allCookiee.getJSONObject(i).getString("offset"));
+                                    man_cs_offset_northing = manualLastNorthing + temp;
+                                }else{
+                                    temp = Math.sin(angleRedians) * Double.parseDouble(allCookiee.getJSONObject(i).getString("offset"));
+                                    man_cs_offset_northing = manualLastNorthing - temp;
+                                }
+                                Log.e("man_cs_offset_northing", String.valueOf(man_cs_offset_northing));
+
+                                man_bsoffset = 0.000;
+                                man_isoffset = calSiteOffset(intermediatesite);
+                                man_fsoffset = 0.000;
+
+                                JSONArray bsSumMean = tempArray;
+                                JSONArray isSumMean = calSiteOffsetSumMean(intermediatesite);
+                                JSONArray fsSumMean = tempArray;
+
+                                ManbsOffsetMean = 0.000;
+                                ManfsOffsetMean = 0.000;
+                                ManisOffsetMean = 0.000;
+                                try {
+                                    ManbsOffsetMean = Double.valueOf(bsSumMean.getString(1));
+                                    ManisOffsetMean = Double.valueOf(isSumMean.getString(1));
+                                    ManfsOffsetMean = Double.valueOf(fsSumMean.getString(1));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                JSONArray bsRiseFall = calRiseFall(ManbsOffsetMean, ManfsOffsetMean);
+                                manrisePlus = 0.000;
+                                manfallMinus = 0.000;
+                                try {
+                                    manrisePlus = bsRiseFall.getDouble(0);
+                                    manfallMinus = bsRiseFall.getDouble(1);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                Double manprevious_ch_by_auto_level = Double.parseDouble(previosDataJSON.getString("ch_by_auto_level"));
+                                Double manprevious_hight_of_instrument = Double.parseDouble(previosDataJSON.getString("hight_of_instrument"));
+                                Double manprevious_utm_easting = Double.valueOf(previosDataJSON.getString("utm_easting"));
+                                Double manprevious_utm_northing = Double.valueOf(previosDataJSON.getString("utm_northing"));
+                                Double manprevious_measurment_ch = Double.valueOf(previosDataJSON.getString("measurment_ch"));
+
+                                manchByAutoLevel = calChByAutoLevel(manprevious_ch_by_auto_level, man_bsoffset, man_fsoffset);
+                                mancheckedReduceLevel = calCheckedReduceLevel(manprevious_hight_of_instrument, ManisOffsetMean, ManfsOffsetMean);
+                                manreduceLevel = calReduceLevel(manprevious_hight_of_instrument, ManbsOffsetMean, ManfsOffsetMean);
+
+                                manheightOfInstrument = calheightOfInstrument( mancheckedReduceLevel, ManbsOffsetMean, ManfsOffsetMean);
+                                manavgHeightOfInstrument = manheightOfInstrument - mancheckedReduceLevel;
+
+                                String tempTBL = tbm_rl.getText().toString();
+                                Double manTBM_RL;
+
+                                if( tempTBL.equals("") ){
+                                    manTBM_RL = 0.000;
+                                }else {
+                                    manTBM_RL = Double.valueOf(tbm_rl.getText().toString());
+                                }
+                                String n = String.valueOf(manprevious_utm_northing);
+                                String e = String.valueOf(manprevious_utm_easting);
+
+                                Double manadjustmentError = calAdjustmentError( manTBM_RL, manreduceLevel);
+                                Double mann_offset = Double.valueOf(calNOffset(man_cs_offset_northing, n));
+                                Double mane_offset = Double.valueOf(calEOffset(man_cs_offset_easting, e));
+
+                                String nOffset = String.valueOf(mann_offset);
+                                String eOffset = String.valueOf(mane_offset);
+                                String Pgps_offset = calGPSOffsetLength( man_cs_offset_northing, man_cs_offset_easting, previosDataJSON.getString("utm_northing"), previosDataJSON.getString("utm_easting"), nOffset, eOffset);
+                                Double mangps_offset_length = Double.valueOf(Pgps_offset);
+
+                                String Pmapping_ch = calMappingCh( nOffset, Pgps_offset, previosDataJSON.getString("mapping_ch"));
+                                Double manch = Double.valueOf(Pmapping_ch);
+
+                                String manlSection = allCookiee.getJSONObject(i).getString("chainage");
+                                String manxSection = allCookiee.getJSONObject(i).getString("offset");
+                                String manRemarks = allCookiee.getJSONObject(i).getString("remarks");
+
+                                Double manMeasurementCH = calMeasurementCH( manprevious_measurment_ch , manxSection, manlSection);
+                                int id = Integer.parseInt(Variables.PROJECT_ID);
+                                int equ = Integer.parseInt(previosDataJSON.getString("equipement_id"));
+                                String layer = previosDataJSON.getString("layer_code");
+                                String manel = "";
+                                Log.e("ProjectId", String.valueOf(id));
+                                Log.e("equipmentId", String.valueOf(equ));
+
+                                Log.e("lattitude", "");
+                                Log.e("Lat DMS", "");
+                                Log.e("Long DMS", "");
+                                Log.e("longitude", "");
+
+                                Log.e("getLayer", String.valueOf(layer));
+
+                                Log.e("utm_zone", "");
+                                Log.e("utm_easting", "");
+                                Log.e("utm_northing", "");
+
+                                Log.e("angleRedians", String.valueOf(angleRedians));
+                                Log.e("cs_offset_e", String.valueOf(man_cs_offset_easting));
+                                Log.e("cs_offset_n", String.valueOf(man_cs_offset_northing));
+                                Log.e("el", String.valueOf(manel));
+                                Log.e("mapping_ch", String.valueOf(manch));
+                                Log.e("chByAutoLevel", String.valueOf(manchByAutoLevel));
+                                Log.e("measurment_ch", String.valueOf(manMeasurementCH));
+                                Log.e("gps_offset_length", String.valueOf(mangps_offset_length));
+                                Log.e("BS Offset", String.valueOf(man_bsoffset));
+                                Log.e("IS Offset", String.valueOf(man_isoffset));
+                                Log.e("FS Offset", String.valueOf(man_fsoffset));
+                                Log.e("n_offset", String.valueOf(mann_offset));
+                                Log.e("e_offset", String.valueOf(mane_offset));
+                                Log.e("l_section_offset", String.valueOf(manlSection));
+                                Log.e("x_section_offset", String.valueOf(manxSection));
+                                Log.e("Rise Plus", String.valueOf(manrisePlus));
+                                Log.e("Fall Minus", String.valueOf(manfallMinus));
+                                Log.e("avgHeightOfInstrument", String.valueOf(manavgHeightOfInstrument));
+                                Log.e("heightOfInstrument", String.valueOf(manheightOfInstrument));
+                                Log.e("calculated_reduce_rl", String.valueOf(manreduceLevel));
+                                Log.e("checked_reduce_level", String.valueOf(mancheckedReduceLevel));
+                                Log.e("remarks", String.valueOf(manRemarks));
+
+                                Log.e("adj_rl", "");
+                                Log.e("adjustmentError", String.valueOf(manadjustmentError));
+                                Log.e("adjustmentError", String.valueOf(manadjustmentError));
+                                Log.e("tbm_rl", String.valueOf(manTBM_RL));
+
+                                Log.e("bs_angle", "");
+                                Log.e("fs_angle", "");
+                                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                                Log.e("currentDateTimeString",currentDateTimeString);
+
+                                int lastId = db.addMeasurement(new Measurement(id, equ, layer,"", "", "", "",
+                                        "", String.valueOf(angleRedians), String.valueOf(man_cs_offset_easting), String.valueOf(man_cs_offset_northing),
+                                        "", String.valueOf(manch),String.valueOf(manchByAutoLevel),String.valueOf(manMeasurementCH), String.valueOf(mangps_offset_length),
+                                        String.valueOf(man_bsoffset), String.valueOf(man_isoffset), String.valueOf(man_fsoffset),
+                                        String.valueOf(mann_offset), String.valueOf(mane_offset), manlSection, manxSection, String.valueOf(manrisePlus), String.valueOf(manfallMinus),
+                                        String.valueOf(manavgHeightOfInstrument), String.valueOf(manheightOfInstrument),
+                                        String.valueOf(manreduceLevel), String.valueOf(mancheckedReduceLevel), String.valueOf(manRemarks), "", String.valueOf(manadjustmentError), "",
+                                        "", "", "", "", "", "", 1, currentDateTimeString));
+
+
+                                String concatBackSite = backsite.getString(0);
+                                String concatInterSite = intermediatesite.getString(0);
+                                String concatForeSite = foresite.getString(0);
+
+                                Log.e("concatBackSite", concatBackSite);
+                                Log.e("concatInterSite", concatInterSite);
+                                Log.e("concatForeSite", concatForeSite);
+                                int readingId = db.addStaffReadings(lastId, concatBackSite, concatInterSite, concatForeSite);
+                                if (lastId > 0 && readingId > 0){
+                                    db.deleteCookieByProjectId(String.valueOf(id));
+                                    calCoreCal();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+            }
+        });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -292,7 +535,7 @@ public class AddMeasurement extends AppCompatActivity {
         convertToDegree(Latitude, Longitude);
         zoneNorthingEasting(Latitude, Longitude);
         //db.deleteTable("measurement");
-        db.createMeasurementTables();
+        //db.createMeasurementTables();
 
         previousData = db.getMeasurementByProjectId( ProjectId );
 
@@ -546,9 +789,38 @@ public class AddMeasurement extends AppCompatActivity {
         String[] longDMSArray = getLongDMS.split(",");
         int coordinate2 = db.addCoOrdinates(lastId, "lng", longDMSArray[0], longDMSArray[1], longDMSArray[2]);
 
-        String concatBackSite = concat(backsite);
-        String concatInterSite = concat(intermediatesite);
-        String concatForeSite = concat(foresite);
+        String concatBackSite = "", concatInterSite = "", concatForeSite = "";
+        if( backsite.length() > 1 ||  intermediatesite.length() > 1 ||  foresite.length() > 1 ){
+            try {
+
+                if( backsite.length() > 1)
+                    concatBackSite = backsite.getString(0) + "," + backsite.getString(1) + "," + backsite.getString(2);
+                else
+                    concatBackSite = ",,,";
+                if( intermediatesite.length() > 1 )
+                    concatInterSite = intermediatesite.getString(0) + "," + intermediatesite.getString(1) + "," + intermediatesite.getString(2);
+                else
+                    concatInterSite = ",,,";
+
+                if( foresite.length() > 1)
+                    concatForeSite = foresite.getString(0) + "," + foresite.getString(1) + "," + foresite.getString(2);
+                else
+                    concatForeSite = ",,,";
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                concatBackSite = backsite.getString(0);
+                concatInterSite = intermediatesite.getString(0);
+                concatForeSite = foresite.getString(0);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         int readingId = db.addStaffReadings(lastId, concatBackSite, concatInterSite, concatForeSite);
 
         if( lastId > 0 && coordinate1 > 0 && coordinate2 > 0 && readingId > 0){

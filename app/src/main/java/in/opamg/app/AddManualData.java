@@ -48,6 +48,8 @@ public class AddManualData extends AppCompatActivity {
     ArrayList<CookieGetSet> cookieList = new ArrayList<CookieGetSet>();
     CookieListing AdapterCookieList;
     JSONArray allCookies = new JSONArray();
+    ImageView backBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class AddManualData extends AppCompatActivity {
 
         add = (Button) findViewById(R.id.add);
         done = (Button) findViewById(R.id.done);
+        backBtn = (ImageView) findViewById(R.id.backBtn);
 
         chainage = (EditText) findViewById(R.id.chainage);
         offset = (EditText) findViewById(R.id.offset);
@@ -101,6 +104,21 @@ public class AddManualData extends AppCompatActivity {
                         Toast.makeText(AddManualData.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+        done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(AddManualData.this, MapActivity.class);
+                startActivity(i);
+                AddManualData.this.finish();
+            }
+        });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 

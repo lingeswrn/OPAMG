@@ -19,6 +19,7 @@ public class Variables {
     public static String PROJECTS = "projects";
     public static String EQUIPMENTS = "equipments";
     public static String LAYERS = "layers";
+    public static String MEASUREMENT = "measurement";
 
     //ACTION
     public static String LIST = "list";

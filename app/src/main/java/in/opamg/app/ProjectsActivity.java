@@ -84,44 +84,45 @@ public class ProjectsActivity extends AppCompatActivity {
         String mobile = prefs.getString(Variables.SESSION_MOBILE, "");
         String email = prefs.getString(Variables.SESSION_EMAIL, "");
 
-        // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        // Define the criteria how to select the locatioin provider -> use
-        // default
-        Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
-        try {
-            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception ex) {
-        }
-
-        try {
-            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch (Exception ex) {
-
-        }
-        if (!gps_enabled && !network_enabled) {
-            // notify user
-            AlertDialog.Builder dialog = new AlertDialog.Builder(ProjectsActivity.this);
-            dialog.setCancelable(false);
-            dialog.setMessage(ProjectsActivity.this.getResources().getString(R.string.gps_network_not_enabled));
-            dialog.setPositiveButton(ProjectsActivity.this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    ProjectsActivity.this.startActivity(myIntent);
-                    //get gps
-                }
-            });
-
-            dialog.show();
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
+        db.createMeasurementTables();
+//        // Get the location manager
+//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//
+//        // Define the criteria how to select the locatioin provider -> use
+//        // default
+//        Criteria criteria = new Criteria();
+//        provider = locationManager.getBestProvider(criteria, false);
+//        try {
+//            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+//        } catch (Exception ex) {
+//        }
+//
+//        try {
+//            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//        } catch (Exception ex) {
+//
+//        }
+//        if (!gps_enabled && !network_enabled) {
+//            // notify user
+//            AlertDialog.Builder dialog = new AlertDialog.Builder(ProjectsActivity.this);
+//            dialog.setCancelable(false);
+//            dialog.setMessage(ProjectsActivity.this.getResources().getString(R.string.gps_network_not_enabled));
+//            dialog.setPositiveButton(ProjectsActivity.this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+//                    // TODO Auto-generated method stub
+//                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                    ProjectsActivity.this.startActivity(myIntent);
+//                    //get gps
+//                }
+//            });
+//
+//            dialog.show();
+//        }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            return;
+//        }
 
         addProject.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,7 +275,7 @@ public class ProjectsActivity extends AppCompatActivity {
             proj.put("project_name", cn.get_project_name());
             projArray.put(proj);
         }
-
+        Log.e("projArray", String.valueOf(projArray));
         Gson gson = new Gson();
         JSONArray json = projArray;
         taskList = gson.fromJson(String.valueOf(json), new TypeToken<List<ProjectGetSet>>(){}.getType());
@@ -462,7 +463,7 @@ public class ProjectsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent i = new Intent(ProjectsActivity.this, MapActivity.class);
                     Variables.PROJECT_ID = list.getId();
-                    //i.putExtra("PROJECT_ID", list.getId());
+                    i.putExtra("PROJECT_ID", list.getId());
                     startActivity(i);
                 }
             });
