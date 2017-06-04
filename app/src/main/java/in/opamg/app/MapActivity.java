@@ -74,6 +74,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
     Double getLatitude, getLongitude;
     ImageView syncBtn, backBtn;
     ProgressDialog pd;
+    int count = 0;
 
     /** Called when the activity is first created. */
     @Override
@@ -145,11 +146,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        int s = synWithServer();
-                        if( s == 1 )
-                            Toast.makeText(MapActivity.this, "Updated to server successfully!", Toast.LENGTH_LONG).show();
-                        else
-                            Toast.makeText(MapActivity.this, "Something went wrong!", Toast.LENGTH_LONG).show();
+                        synWithServer();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -163,7 +160,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             @Override
             public void onClick(View v) {
                 if(isOnline()) {
-                    JSONArray all = db.getAllMeasurementByProjectId(Variables.PROJECT_ID);
+                    JSONArray all = db.getAllMeasurementCount(Variables.PROJECT_ID);
                     if( all.length() > 0 ){
                         AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
                         builder.setMessage("Are you sure? If yes, all data delete from here. Data will store in Server.").setPositiveButton("Yes", dialogClickListener)
@@ -391,62 +388,78 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         return added;
     }
 
-    public int synWithServer(){
-        final int[] returnValue = {0};
-        JSONArray all = db.getAllMeasurementByProjectId(Variables.PROJECT_ID);
+    public void synWithServer(){
 
-        Log.e("All", String.valueOf(all));
+        final JSONArray allIds = db.getAllMeasurementCount(Variables.PROJECT_ID);
+        final JSONArray fullData = new JSONArray();
+        Log.e("allIds", String.valueOf(allIds));
 
-        RequestQueue queue = Volley.newRequestQueue(MapActivity.this);
+        for( int i = 0; i < allIds.length(); i++ ){
+            JSONObject all = null;
+            try {
+                Log.e("id", allIds.getString(i));
+                all = db.getAllMeasurementByProjectId( allIds.getString(i));
+                fullData.put(all);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.e("Input", String.valueOf(fullData));
+            RequestQueue queue = Volley.newRequestQueue(MapActivity.this);
 
-        JSONObject param = new JSONObject();
+            JSONObject param = new JSONObject();
 
-        try {
-            param.put("data", all);
+         try {
+            param.put("data", fullData);
             pd = new ProgressDialog(MapActivity.this);
             pd.setMessage("Storing Data to server...");
             pd.setCancelable(false);
-            pd.show();
-        } catch (JSONException ex) {
+        pd.show();
+    } catch (JSONException ex) {
 
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST, Variables.API_URL + Variables.MEASUREMENT, param,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObj) {
-                        pd.dismiss();
-
-                        if (jsonObj != null) {
-
-                            try {
-                                String code = jsonObj.getString("code");
-
-                                if (code.equalsIgnoreCase("200")) {
-                                    returnValue[0] = 1;
-                                    db.deleteMeasurement(Variables.PROJECT_ID);
-                                }
-                                else
-                                {
-                                    Toast.makeText(MapActivity.this, "somthing", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                Toast.makeText(MapActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MapActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-        queue.add(request);
-        return returnValue[0];
     }
 
+    JsonObjectRequest request = new JsonObjectRequest(
+            Request.Method.POST, Variables.API_URL + Variables.MEASUREMENT, param,
+            new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObj) {
+                    pd.dismiss();
+
+                    if (jsonObj != null) {
+
+                        try {
+                            String code = jsonObj.getString("code");
+
+                            if (code.equalsIgnoreCase("200")) {
+                                for( int i = 0; i < allIds.length(); i++ ){
+                                    db.deleteMeasurementById( allIds.getString(i) );
+                                }
+                                Toast.makeText(MapActivity.this, "Updated to server successfully!", Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(MapActivity.this, ProjectsActivity.class);
+                                startActivity(i);
+                                MapActivity.this.finish();
+
+                                pd.dismiss();
+                            }
+                            else
+                            {
+                                Toast.makeText(MapActivity.this, "somthing", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(MapActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(MapActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+                queue.add(request);
+    }
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

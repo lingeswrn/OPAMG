@@ -133,7 +133,7 @@ public class AddManualData extends AppCompatActivity {
     }
 
     private void getCookiedata() {
-        db.createCookieTable();
+
         allCookies = db.getAllCookie( projectId );
         Log.e("allCookies", String.valueOf(allCookies));
 

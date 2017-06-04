@@ -174,7 +174,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("back_site", s);
         values.put("intermediate_site", s1);
         values.put("forward_site", s2);
-
+        Log.e("values", String.valueOf(values));
         // Inserting Row
         int staffId = (int) db.insert("staff_readings", null, values);
         db.close(); // Closing database connection
@@ -521,17 +521,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return latlngArray;
     }
 
-    public JSONArray getAllMeasurementByProjectId(String projectId){
-        String selectQuery = "SELECT t.* , staff_readings.back_site, staff_readings.intermediate_site,staff_readings.forward_site FROM  `measurement` AS t LEFT OUTER JOIN staff_readings ON t.id = staff_readings.measurement_id\n" +
-                "WHERE t.project_id = " + projectId;
-
+    public JSONObject getAllMeasurementByProjectId(String id){
+        String selectQuery = "SELECT * FROM  `measurement` WHERE id = " + id;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-
+        JSONObject allMeasurementObj = new JSONObject();
         JSONArray allMeasurementsArray = new JSONArray();
         if (cursor.moveToFirst()) {
             do {
-                JSONObject allMeasurementObj = new JSONObject();
+
                 JSONArray coordinatesArray = new JSONArray();
                 JSONArray staffReadingArray = new JSONArray();
                 try {
@@ -577,24 +575,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     allMeasurementObj.put("other_photograph", cursor.getString(39));
                     allMeasurementObj.put("status", cursor.getString(40));
                     allMeasurementObj.put("created_date", cursor.getString(41));
-                    allMeasurementObj.put("back_site", cursor.getString(42));
-                    allMeasurementObj.put("intermediate_site", cursor.getString(43));
-                    allMeasurementObj.put("forward_site", cursor.getString(44));
+                    allMeasurementObj.put("staff_readings", getAllStaffreadings(cursor.getString(0)));
 
                     coordinatesArray = getAlLCoOrdinates( cursor.getString(0) );
                     allMeasurementObj.put("coordinates", coordinatesArray);
-
+                    allMeasurementsArray.put(allMeasurementObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                if( coordinatesArray.length() > 0 )
-                    allMeasurementsArray.put(allMeasurementObj);
+                //if( coordinatesArray.length() > 0 )
+
             } while (cursor.moveToNext());
         }
-        Log.e("All", String.valueOf(allMeasurementsArray));
         cursor.close();
-        return allMeasurementsArray;
+        return allMeasurementObj;
     }
 
     public JSONArray getAlLCoOrdinates( String measurementId){
@@ -631,5 +626,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteCookieByProjectId(String projectId){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from cookie WHERE project_id ="+ projectId);
+    }
+
+    public JSONArray getAllMeasurementCount(String projectId){
+        String selectQuery = "SELECT id FROM  `measurement` WHERE project_id = " + projectId;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray allMeasurementsArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                allMeasurementsArray.put( cursor.getString(0));
+                //allMeasurementsArray.put(getAllStaffreadings(cursor.getString(0)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return allMeasurementsArray;
+    }
+
+    public JSONArray getAllStaffreadings(String id){
+        String selectQuery = "SELECT * FROM  `staff_readings` WHERE measurement_id = " + id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray allMeasurementsArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject sites = new JSONObject();
+                try {
+                    sites.put("back_site", cursor.getString(2));
+                    sites.put("intermediate_site", cursor.getString(3));
+                    sites.put("forward_site", cursor.getString(4));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                allMeasurementsArray.put( sites );
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return allMeasurementsArray;
+    }
+
+    public void deleteMeasurementById(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from measurement WHERE id ="+ id);
+        db.execSQL("delete from staff_readings WHERE measurement_id ="+ id);
+        db.execSQL("delete from gps_coordinates WHERE measurement_id ="+ id);
     }
 }

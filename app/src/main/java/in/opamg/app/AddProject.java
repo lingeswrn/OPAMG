@@ -154,7 +154,7 @@ public class AddProject extends AppCompatActivity {
 
 
                                             if (code.equalsIgnoreCase("200")) {
-                                                Intent i = new Intent(AddProject.this, MapActivity.class);
+                                                Intent i = new Intent(AddProject.this, ProjectsActivity.class);
                                                 startActivity(i);
                                                 Toast.makeText(AddProject.this, "Project Added!", Toast.LENGTH_SHORT).show();
                                             }

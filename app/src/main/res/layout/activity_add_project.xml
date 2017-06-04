@@ -43,58 +43,58 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/company_name"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/company_name"/>
+                android:id="@+id/company_name"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/project_name"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/project_name"/>
+                android:id="@+id/project_name"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/order_name"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/order_name"/>
+                android:id="@+id/order_name"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/scope_of_work"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/scope_of_work"/>
+                android:id="@+id/scope_of_work"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/from"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/from"/>
+                android:id="@+id/from"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/to"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/to"/>
+                android:id="@+id/to"
+                android:inputType="text"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/remarks"
                 android:textColorHint="@color/colorPrimary"
-                android:id="@+id/remarks"/>
+                android:id="@+id/remarks"
+                android:inputType="text"/>
+            <Button android:id="@+id/btnAddProject"
+                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:text="@string/add"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorCommon"
+                android:textColor="@color/colorWhite"
+                android:inputType="text"/>
         </LinearLayout>
     </ScrollView>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
-        <Button android:id="@+id/btnAddProject"
-            android:layout_height="30dp"
-            android:layout_width="match_parent"
-            android:text="@string/add"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorCommon"
-            android:textColor="@color/colorWhite"/>
-    </RelativeLayout>
 </LinearLayout>

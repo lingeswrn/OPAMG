@@ -521,7 +521,8 @@
                             android:layout_weight="4"
                             android:hint="@string/adj_rl"
                             android:textSize="12sp"
-                            android:id="@+id/adj_rl"/>
+                            android:id="@+id/adj_rl"
+                            android:inputType="numberDecimal"/>
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -553,14 +554,16 @@
                             android:layout_weight="4"
                             android:hint="@string/bs_angle"
                             android:textSize="12sp"
-                            android:id="@+id/bs_angle"/>
+                            android:id="@+id/bs_angle"
+                            android:inputType="numberDecimal"/>
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="4"
                             android:hint="@string/fs_angle"
                             android:textSize="12sp"
-                            android:id="@+id/fs_angle"/>
+                            android:id="@+id/fs_angle"
+                            android:inputType="numberDecimal"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

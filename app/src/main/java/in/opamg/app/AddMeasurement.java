@@ -234,6 +234,7 @@ public class AddMeasurement extends AppCompatActivity {
                     autoComplete.setError(Html.fromHtml("<font color='#FFFFFF'>Enter Valid data</font>"));
                 }else {
                     //calCoreCal();
+                    db.createCookieTable();
                     JSONArray allCookiee = db.getAllCookie(Variables.PROJECT_ID);
                     if( allCookiee.length() == 0 ){
                         calCoreCal();
@@ -460,7 +461,8 @@ public class AddMeasurement extends AppCompatActivity {
                                 Log.e("concatInterSite", concatInterSite);
                                 Log.e("concatForeSite", concatForeSite);
                                 int readingId = db.addStaffReadings(lastId, concatBackSite, concatInterSite, concatForeSite);
-                                if (lastId > 0 && readingId > 0){
+                                //if (lastId > 0 && readingId > 0){
+                                if (allCookiee.length() - 1 == i){
                                     db.deleteCookieByProjectId(String.valueOf(id));
                                     calCoreCal();
                                 }
