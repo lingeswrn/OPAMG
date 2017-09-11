@@ -161,6 +161,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onClick(View v) {
                 if(isOnline()) {
                     JSONArray all = db.getAllMeasurementCount(Variables.PROJECT_ID);
+                    Log.e("allSync", String.valueOf(all));
                     if( all.length() > 0 ){
                         AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
                         builder.setMessage("Are you sure? If yes, all data delete from here. Data will store in Server.").setPositiveButton("Yes", dialogClickListener)
@@ -281,7 +282,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onMapClick(LatLng point) {
                 if( markerCheck ){
                     MarkerOptions markerOptions = new MarkerOptions();
-                    float zoomLevel = (float) 21.00;
+                    float zoomLevel = (float) 18.00;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
                     markerOptions.position(point);
@@ -309,6 +310,15 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
                     intent.putExtra("Longitude", ""+getLongitude );
                     //intent.putExtra("ProjectId", projectId);
                     startActivity(intent);
+                    MapActivity.this.finish();
+                }else{
+                    String measId = String.valueOf(marker.getTitle().toString());
+                    Log.e("measId", measId);
+                    Intent intent = new Intent(MapActivity.this, MeasurementDetails.class);
+                    intent.putExtra("measurementId", ""+measId );
+                    startActivity(intent);
+                    //getAllMeasurementByProjectId();
+                    MapActivity.this.finish();
                 }
 
                 return false;
@@ -319,6 +329,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         Log.e("LatLng", String.valueOf(LatLng));
         for(int i = 0; i < LatLng.length(); i++) {
             Double getLat = null, getLong = null;
+            String latLngId;
             String layercode = "";
 
             try {
@@ -326,10 +337,12 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
                 if( !LatLngJson.getString("latitude").equalsIgnoreCase("") && !LatLngJson.getString("longitude").equalsIgnoreCase("")){
                     getLat = Double.parseDouble(LatLngJson.getString("latitude"));
                     getLong = Double.parseDouble(LatLngJson.getString("longitude"));
+                    latLngId = LatLngJson.getString("id");
                     layercode = LatLngJson.getString("layer_code");
                     Log.e("getLat", String.valueOf(getLat));
                     Log.e("getLong", String.valueOf(getLong));
-                    createMarker(getLat, getLong, i, layercode);
+                    Log.e("latLngId", String.valueOf(latLngId));
+                    createMarker(getLat, getLong, latLngId, layercode);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -338,53 +351,53 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         }
     }
 
-    protected Marker createMarker(double latitude, double longitude, int i, String layercodes) {
+    protected Marker createMarker(double latitude, double longitude, String i, String layercodes) {
         Marker added = null;
         if (layercodes.equalsIgnoreCase("OCC")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_occ))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else if (layercodes.equalsIgnoreCase("BS")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_bs))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else if (layercodes.equalsIgnoreCase("FS")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_fs))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else if (layercodes.equalsIgnoreCase("BM")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_bm))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else if (layercodes.equalsIgnoreCase("TBM")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tbm))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else if (layercodes.equalsIgnoreCase("CH")){
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_ch))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }else {
             added = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_re))
-                    .title(String.valueOf(i + 1)));
+                    .title(String.valueOf(i)));
         }
         
-        added.showInfoWindow();
+        //added.showInfoWindow();
         return added;
     }
 

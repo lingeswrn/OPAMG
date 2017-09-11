@@ -18,6 +18,7 @@
     <string name="to">To</string>
     <string name="remarks">Remarks</string>
     <string name="title_activity_add_measurement">Map</string>
+    <string name="summary_report">Summary Report</string>
 
 
     <!--Maps activity -->

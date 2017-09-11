@@ -42,6 +42,8 @@ public class Measurement {
 	String _location_photograph;
 	String _screen_shot;
 	String _other_photograph;
+	String _child;
+	String _isparent;
 	int _status;
 	String _created_date;
 
@@ -56,7 +58,7 @@ public class Measurement {
 					   String avg_hight_of_instrument_from_gl, String hight_of_instrument, String calculated_reduce_rl,
 					   String checked_reduce_level, String remarks, String adj_rl, String adjustment_error, String tbm_rl,
 					   String bs_angle, String fs_angle, String close_photograph, String location_photograph,
-					   String screen_shot, String other_photograph, int status, String created_date){
+					   String screen_shot, String other_photograph, String child, String isparent, int status, String created_date){
 
 		this._project_id = project_id;
 		this._equipement_id = equipement_id;
@@ -97,6 +99,8 @@ public class Measurement {
 		this._location_photograph = location_photograph;
 		this._screen_shot = screen_shot;
 		this._other_photograph = other_photograph;
+		this._child = child;
+		this._isparent = isparent;
 		this._status = status;
 		this._created_date = created_date;
 	}
@@ -435,5 +439,23 @@ public class Measurement {
 
 	public void set_created_date(String _created_date) {
 		this._created_date = _created_date;
+	}
+
+
+
+	public String get_child() {
+		return _child;
+	}
+
+	public void set_child(String _child) {
+		this._child = _child;
+	}
+
+	public String get_isparent() {
+		return _isparent;
+	}
+
+	public void set_isparent(String _isparent) {
+		this._isparent = _isparent;
 	}
 }

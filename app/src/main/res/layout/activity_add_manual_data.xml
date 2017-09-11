@@ -51,14 +51,14 @@
                     android:hint="@string/chainage"
                     android:id="@+id/chainage"
                     android:layout_weight="2"
-                    android:inputType="numberDecimal"/>
+                    android:inputType="text"/>
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/offset"
                     android:id="@+id/offset"
                     android:layout_weight="2"
-                    android:inputType="numberDecimal"/>
+                    android:inputType="text"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                     android:hint="@string/is_reading"
                     android:id="@+id/is_reading"
                     android:layout_weight="2"
-                    android:inputType="numberDecimal"/>
+                    android:inputType="text"/>
                 <AutoCompleteTextView
                     android:id="@+id/search_layers"
                     android:layout_width="match_parent"

@@ -104,7 +104,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE "+ tableProjects);
     }
 
-
     // Adding new Project
     public void addProject(Project project) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -128,6 +127,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE_PROJECTS, null, values);
         db.close(); // Closing database connection
     }
+
+    public void addParentChild(String measurementId, int lastId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("parentId", measurementId);
+        values.put("childId", lastId);
+        db.insert("parentchild", null, values);
+        db.close();
+    }
+
     // Adding new Equipment
     public void addEquipment(Equipments equipments) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -188,6 +197,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("code", layers.get_code());
         values.put("description", layers.get_description());
+        values.put("category", layers.get_category());
         // Inserting Row
         db.insert(TABLE_LAYERS, null, values);
         db.close(); // Closing database connection
@@ -198,7 +208,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         List<Project> projectList = new ArrayList<Project>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_PROJECTS;
-
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -226,12 +235,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return contact list
         return projectList;
     }
+
     public void createEquipmentTable(){
         SQLiteDatabase db = this.getWritableDatabase();
         String CREATE_EQUIPMENT_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_EQUIPMENTS +" ( id INTEGER, model_number TEXT, last_calibration_service_center TEXT, expiry_date TEXT, least_count TEXT, owner TEXT, status TEXT, created_date TEXT )";
         db.execSQL(CREATE_EQUIPMENT_TABLE);
     }
-
 
     public List<Equipments> getAllEquipments() {
         List<Equipments> equipmentList = new ArrayList<Equipments>();
@@ -283,7 +292,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return equipmentList;
     }
 
-
     public List<Layers> getAllLayers() {
         List<Layers> layers = new ArrayList<Layers>();
         // Select All Query
@@ -309,7 +317,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void createLayersTable(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String CREATE_LAYER_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_LAYERS +" ( code TEXT, description TEXT )";
+        String CREATE_LAYER_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_LAYERS +" ( code TEXT, description TEXT, category TEXT )";
         db.execSQL(CREATE_LAYER_TABLE);
     }
 
@@ -321,8 +329,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_GPS_COORDINATES = "CREATE TABLE IF NOT EXISTS gps_coordinates ( id INTEGER PRIMARY KEY, measurement_id INT, type TEXT, deg TEXT, min TEXT, sec TEXT)";
         db.execSQL(CREATE_GPS_COORDINATES);
 
-        String CREATE_MEASUREMENT = "CREATE TABLE IF NOT EXISTS measurement ( id INTEGER PRIMARY KEY, project_id INT, equipement_id INT, layer_code TEXT, lattitude TEXT, longitude TEXT, utm_zone TEXT, utm_easting TEXT, utm_northing TEXT, angle_redians TEXT, cs_offset_e TEXT, cs_offset_n TEXT, el TEXT, mapping_ch TEXT, ch_by_auto_level TEXT, measurment_ch TEXT, gps_offset_length TEXT, bs_offset TEXT, is_offset TEXT, fs_offset TEXT, n_offset TEXT, e_offset TEXT, l_section_offset TEXT, x_section_offset TEXT, rise_plus TEXT, fall_minus TEXT, avg_hight_of_instrument_from_gl TEXT, hight_of_instrument TEXT, calculated_reduce_rl TEXT, checked_reduce_level TEXT, remarks TEXT, adj_rl TEXT, adjustment_error TEXT, tbm_rl TEXT, bs_angle TEXT, fs_angle TEXT, close_photograph TEXT, location_photograph TEXT, screen_shot TEXT, other_photograph TEXT, status INT, created_date TEXT )";
+        String CREATE_MEASUREMENT = "CREATE TABLE IF NOT EXISTS measurement ( id INTEGER PRIMARY KEY, project_id INT, equipement_id INT, layer_code TEXT, lattitude TEXT, longitude TEXT, utm_zone TEXT, utm_easting TEXT, utm_northing TEXT, angle_redians TEXT, cs_offset_e TEXT, cs_offset_n TEXT, el TEXT, mapping_ch TEXT, ch_by_auto_level TEXT, measurment_ch TEXT, gps_offset_length TEXT, bs_offset TEXT, is_offset TEXT, fs_offset TEXT, n_offset TEXT, e_offset TEXT, l_section_offset TEXT, x_section_offset TEXT, rise_plus TEXT, fall_minus TEXT, avg_hight_of_instrument_from_gl TEXT, hight_of_instrument TEXT, calculated_reduce_rl TEXT, checked_reduce_level TEXT, remarks TEXT, adj_rl TEXT, adjustment_error TEXT, tbm_rl TEXT, bs_angle TEXT, fs_angle TEXT, close_photograph TEXT, location_photograph TEXT, screen_shot TEXT, other_photograph TEXT, child TEXT, isparent TEXT, status INT, created_date TEXT )";
         db.execSQL(CREATE_MEASUREMENT);
+
+        String CREATE_PARENT_TABLE = "CREATE TABLE IF NOT EXISTS parentchild ( id INTEGER PRIMARY KEY, parentId TEXT, childId TEXT )";
+        db.execSQL(CREATE_PARENT_TABLE);
     }
 
     public void createCookieTable(){
@@ -332,7 +343,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public JSONArray getMeasurementByProjectId(int projectId ){
-        String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " ORDER BY id DESC LIMIT 1";
+        String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " AND isparent = 'P' ORDER BY id DESC LIMIT 1";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -381,8 +392,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 prev.put("location_photograph", cursor.getString(37));
                 prev.put("screen_shot", cursor.getString(38));
                 prev.put("other_photograph", cursor.getString(39));
-                prev.put("status", cursor.getString(40));
-                prev.put("created_date", cursor.getString(41));
+                prev.put("child", cursor.getString(40));
+                prev.put("isparent", cursor.getString(41));
+                prev.put("status", cursor.getString(42));
+                prev.put("created_date", cursor.getString(43));
                 previousArray.put(prev);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -436,6 +449,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("location_photograph", measurement.get_close_photograph());
         values.put("screen_shot", measurement.get_screen_shot());
         values.put("other_photograph", measurement.get_other_photograph());
+        values.put("child", measurement.get_child());
+        values.put("isparent", measurement.get_isparent());
         values.put("status", measurement.get_status());
         values.put("created_date", measurement.get_created_date());
         // Inserting Row
@@ -497,7 +512,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public JSONArray getLatLng(String projectId ) {
 
-        String selectQuery = "SELECT lattitude, longitude, layer_code FROM measurement WHERE project_id = " + projectId;
+        String selectQuery = "SELECT lattitude, longitude, layer_code, id FROM measurement WHERE project_id = " + projectId;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -509,6 +524,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     latlng.put("latitude", cursor.getString(0));
                     latlng.put("longitude", cursor.getString(1));
                     latlng.put("layer_code", cursor.getString(2));
+                    latlng.put("id", cursor.getString(3));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -531,6 +547,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
 
                 JSONArray coordinatesArray = new JSONArray();
+                JSONArray projectArray = new JSONArray();
+                JSONArray layerArray = new JSONArray();
                 JSONArray staffReadingArray = new JSONArray();
                 try {
                     allMeasurementObj.put("id", cursor.getString(0));
@@ -573,12 +591,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     allMeasurementObj.put("location_photograph", cursor.getString(37));
                     allMeasurementObj.put("screen_shot", cursor.getString(38));
                     allMeasurementObj.put("other_photograph", cursor.getString(39));
-                    allMeasurementObj.put("status", cursor.getString(40));
-                    allMeasurementObj.put("created_date", cursor.getString(41));
+                    allMeasurementObj.put("child", cursor.getString(40));
+                    allMeasurementObj.put("isparent", cursor.getString(41));
+                    allMeasurementObj.put("status", cursor.getString(42));
+                    allMeasurementObj.put("created_date", cursor.getString(43));
                     allMeasurementObj.put("staff_readings", getAllStaffreadings(cursor.getString(0)));
 
                     coordinatesArray = getAlLCoOrdinates( cursor.getString(0) );
+                    projectArray = getEmpIdbyProjectId( cursor.getString(1) );
+                    layerArray = getLayersbyCode( cursor.getString(3) );
+
                     allMeasurementObj.put("coordinates", coordinatesArray);
+                    allMeasurementObj.put("projectDetails", projectArray);
+                    allMeasurementObj.put("layerDetails", layerArray);
                     allMeasurementsArray.put(allMeasurementObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -612,10 +637,75 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 latlngArray.put(latlng);
             } while (cursor.moveToNext());
+        }else{
+            JSONObject latlng = new JSONObject();
+            JSONObject latlng1 = new JSONObject();
+            try {
+                latlng.put("type", "lat");
+                latlng.put("deg", "");
+                latlng.put("min", "");
+                latlng.put("sec", "");
+                latlng1.put("type", "lng");
+                latlng1.put("deg", "");
+                latlng1.put("min", "");
+                latlng1.put("sec", "");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            latlngArray.put(latlng);
+            latlngArray.put(latlng1);
         }
 
         cursor.close();
         return latlngArray;
+    }
+
+    public JSONArray getEmpIdbyProjectId(String id){
+        String selectQuery = "SELECT  project_name, user_id FROM " + TABLE_PROJECTS + " WHERE id = " + id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray allMeasurementsArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject projects = new JSONObject();
+                try {
+                    projects.put("project_name", cursor.getString(0));
+                    projects.put("user_id", cursor.getString(1));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                allMeasurementsArray.put( projects );
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return allMeasurementsArray;
+    }
+
+    public JSONArray getLayersbyCode(String id){
+        String selectQuery = "SELECT  * FROM " + TABLE_LAYERS + " WHERE code LIKE '" + id + "%'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray allMeasurementsArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject layers = new JSONObject();
+                try {
+                    layers.put("code", cursor.getString(0));
+                    layers.put("description", cursor.getString(1));
+                    layers.put("category", cursor.getString(2));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                allMeasurementsArray.put( layers );
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return allMeasurementsArray;
     }
 
     public void deleteMeasurement(String projectId){
@@ -673,5 +763,131 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("delete from measurement WHERE id ="+ id);
         db.execSQL("delete from staff_readings WHERE measurement_id ="+ id);
         db.execSQL("delete from gps_coordinates WHERE measurement_id ="+ id);
+    }
+
+    public JSONArray getMeasurementByProjectIdForManual(String projectId ){
+        String selectQuery= "SELECT * FROM measurement WHERE project_id = " + projectId + " AND isparent = 'P'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray previousArray = new JSONArray();
+        if(cursor.moveToFirst()) {
+            do {
+                JSONObject prev = new JSONObject();
+                try {
+
+                    prev.put("id", cursor.getString(0));
+                    prev.put("project_id", cursor.getString(1));
+                    prev.put("equipement_id", cursor.getString(2));
+                    prev.put("layer_code", cursor.getString(3));
+                    prev.put("lattitude", cursor.getString(4));
+                    prev.put("longitude", cursor.getString(5));
+                    prev.put("utm_zone", cursor.getString(6));
+                    prev.put("utm_easting", cursor.getString(7));
+                    prev.put("utm_northing", cursor.getString(8));
+                    prev.put("angle_redians", cursor.getString(9));
+                    prev.put("cs_offset_e", cursor.getString(10));
+                    prev.put("cs_offset_n", cursor.getString(11));
+                    prev.put("el", cursor.getString(12));
+                    prev.put("mapping_ch", cursor.getString(13));
+                    prev.put("ch_by_auto_level", cursor.getString(14));
+                    prev.put("measurment_ch", cursor.getString(15));
+                    prev.put("gps_offset_length", cursor.getString(16));
+                    prev.put("bs_offset", cursor.getString(17));
+                    prev.put("is_offset", cursor.getString(18));
+                    prev.put("fs_offset", cursor.getString(19));
+                    prev.put("n_offset", cursor.getString(20));
+                    prev.put("e_offset", cursor.getString(21));
+                    prev.put("l_section_offset", cursor.getString(22));
+                    prev.put("x_section_offset", cursor.getString(23));
+                    prev.put("rise_plus", cursor.getString(24));
+                    prev.put("fall_minus", cursor.getString(25));
+                    prev.put("avg_hight_of_instrument_from_gl", cursor.getString(26));
+                    prev.put("hight_of_instrument", cursor.getString(27));
+                    prev.put("calculated_reduce_rl", cursor.getString(28));
+                    prev.put("checked_reduce_level", cursor.getString(29));
+                    prev.put("remarks", cursor.getString(30));
+                    prev.put("adj_rl", cursor.getString(31));
+                    prev.put("adjustment_error", cursor.getString(32));
+                    prev.put("tbm_rl", cursor.getString(33));
+                    prev.put("bs_angle", cursor.getString(34));
+                    prev.put("fs_angle", cursor.getString(35));
+                    prev.put("close_photograph", cursor.getString(36));
+                    prev.put("location_photograph", cursor.getString(37));
+                    prev.put("screen_shot", cursor.getString(38));
+                    prev.put("other_photograph", cursor.getString(39));
+                    prev.put("child", cursor.getString(40));
+                    prev.put("isparent", cursor.getString(41));
+                    prev.put("status", cursor.getString(42));
+                    prev.put("created_date", cursor.getString(43));
+                    previousArray.put(prev);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return previousArray;
+    }
+
+    public JSONArray getPrevNextData(String mesId, String projId){
+        JSONArray finalarray = new JSONArray();
+        JSONObject currentData = this.getAllMeasurementByProjectId(mesId);
+        JSONArray prevArray = this.getMeasurementByProjectIdForManual(projId);
+        int index = 0;
+        for(int i=0; i < prevArray.length(); i++) {
+            try {
+                JSONObject jObject = prevArray.getJSONObject(i);
+                if(jObject.getString("id").equalsIgnoreCase(mesId)){
+                    index = i;
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            finalarray.put(currentData);
+
+            if( prevArray.length() - 1 == index ){
+                JSONObject nextData = new JSONObject();
+                finalarray.put(nextData);
+            }else {
+                JSONObject nextData = prevArray.getJSONObject(index + 1);
+                finalarray.put(nextData);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return finalarray;
+    }
+
+    public void updateChild(String lastId, String lastIds) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("child", lastIds);
+
+        db.update("measurement", values, "id = ?",
+                new String[] { String.valueOf(lastId) });
+
+    }
+
+    public JSONArray getPrentChild(String measurementId){
+        String selectQuery = "SELECT childId FROM parentchild WHERE parentId = '" + measurementId + "'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        String parentchild = "";
+        JSONArray parentChildArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                parentchild += cursor.getString(0) + ",";
+            } while (cursor.moveToNext());
+            if(parentchild.endsWith(",")){
+                parentchild = parentchild.substring(0, parentchild.length() - 1);
+            }
+        }
+        parentChildArray.put(parentchild);
+        cursor.close();
+        return parentChildArray;
     }
 }

@@ -7,6 +7,16 @@ public class Layers {
 	String _code;
 	String _description;
 
+	public String get_category() {
+		return _category;
+	}
+
+	public void set_category(String _category) {
+		this._category = _category;
+	}
+
+	String _category;
+
 	public String get_code() {
 		return _code;
 	}
@@ -29,8 +39,10 @@ public class Layers {
 	}
 
 	// constructor
-	public Layers(String id, String ModelNumber){
+	public Layers(String id, String ModelNumber, String category){
 		this._code = id;
-		this._description = ModelNumber;	}
+		this._description = ModelNumber;
+		this._category = category;
+	}
 
 }

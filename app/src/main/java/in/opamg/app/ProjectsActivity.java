@@ -85,44 +85,7 @@ public class ProjectsActivity extends AppCompatActivity {
         String email = prefs.getString(Variables.SESSION_EMAIL, "");
 
         db.createMeasurementTables();
-//        // Get the location manager
-//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//
-//        // Define the criteria how to select the locatioin provider -> use
-//        // default
-//        Criteria criteria = new Criteria();
-//        provider = locationManager.getBestProvider(criteria, false);
-//        try {
-//            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-//        } catch (Exception ex) {
-//        }
-//
-//        try {
-//            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-//        } catch (Exception ex) {
-//
-//        }
-//        if (!gps_enabled && !network_enabled) {
-//            // notify user
-//            AlertDialog.Builder dialog = new AlertDialog.Builder(ProjectsActivity.this);
-//            dialog.setCancelable(false);
-//            dialog.setMessage(ProjectsActivity.this.getResources().getString(R.string.gps_network_not_enabled));
-//            dialog.setPositiveButton(ProjectsActivity.this.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//                    // TODO Auto-generated method stub
-//                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                    ProjectsActivity.this.startActivity(myIntent);
-//                    //get gps
-//                }
-//            });
-//
-//            dialog.show();
-//        }
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            return;
-//        }
+
 
         addProject.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -390,8 +353,9 @@ public class ProjectsActivity extends AppCompatActivity {
                                         JSONObject object = result.getJSONObject(i);
                                         String getCode = object.getString("code");
                                         String getDesc = object.getString("description");
+                                        String getCategory = object.getString("category");
 
-                                        db.addLayers(new Layers(getCode, getDesc));
+                                        db.addLayers(new Layers(getCode, getDesc, getCategory));
                                     }
                                 }
                                 else
