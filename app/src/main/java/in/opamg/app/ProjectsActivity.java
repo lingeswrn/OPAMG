@@ -147,6 +147,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
             db.createEquipmentTable();
             db.createLayersTable();
+            db.createCookieTable();
 
             getEquipmentList();
             getLayersList();
