@@ -152,6 +152,9 @@ public class AddManualData extends AppCompatActivity {
                     Double manualLastEasting, manualLastNorthing, temp ,temp1, temp2, temp3, first_half, temp4;
                     try {
                         temp = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) - Double.parseDouble(previosDataJSON.getString("mapping_ch"));
+                        Log.e("getEasting", String.valueOf(getEasting));
+                        Log.e("temp", String.valueOf(temp));
+
                         temp1 = getEasting * temp;
                         temp2 = Double.parseDouble(allCookiee.getJSONObject( allCookiee.length() - 1 ).getString("chainage")) * Double.parseDouble(previosDataJSON.getString("utm_easting"));
                         temp3 = getMappingCh - temp2;
