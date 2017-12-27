@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 editor.putString(Variables.SESSION_EMAIL, email_id);
 
                                                 editor.commit();
-                                                i = new Intent(LoginActivity.this, ProjectsActivity.class);
+                                                i = new Intent(LoginActivity.this, MainActivity.class);
                                                 startActivity(i);
                                             }else {
                                                 Toast.makeText(LoginActivity.this, "Login Error!", Toast.LENGTH_SHORT).show();

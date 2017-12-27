@@ -16,7 +16,6 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         prefs = getSharedPreferences(Variables.MY_PREFS_NAME, MODE_PRIVATE);
-        Log.e("id", "dsadadasdasdaddsaddasd");
         String id = prefs.getString(Variables.SESSION_ID, "");
         Log.e("id", id);
         new Handler().postDelayed(new Runnable() {
@@ -28,7 +27,7 @@ public class SplashScreen extends AppCompatActivity {
                     startActivity(intent);
                     SplashScreen.this.finish();
                 }else {
-                    Intent intent = new Intent(SplashScreen.this, ProjectsActivity.class);
+                    Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                     startActivity(intent);
                     SplashScreen.this.finish();
                 }

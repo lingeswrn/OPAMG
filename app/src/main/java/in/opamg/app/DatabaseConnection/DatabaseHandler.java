@@ -37,6 +37,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Projects table name
     private static final String TABLE_PROJECTS = "projects";
     private static final String TABLE_EQUIPMENTS = "equipments_list";
+    private static final String TABLE_BOOK_LEVEL = "generic_data";
 
     public static String getTableLayers() {
         return TABLE_LAYERS;
@@ -242,6 +243,145 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_EQUIPMENT_TABLE);
     }
 
+    public void createBookLevelTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String CREATE_EQUIPMENT_TABLE = "CREATE TABLE IF NOT EXISTS "+ TABLE_BOOK_LEVEL +" ( id INTEGER PRIMARY KEY, user_id TEXT, back_site_reading TEXT, fore_site_reading TEXT, remarks TEXT, ls_offset_value TEXT, ls_offset TEXT, ls_layers TEXT, ls_is_reading TEXT, ls_reduce_level TEXT, ch TEXT, rs_offset_value TEXT, rs_offset TEXT, rs_layers TEXT, rs_is_reading TEXT )";
+        db.execSQL(CREATE_EQUIPMENT_TABLE);
+    }
+
+    public long addBookLevel(String userId, String back_site_reading, String fore_site_reading, String remarks, String ls_offset_value, String ls_offset, String ls_layers, String ls_is_reading, String ls_reduce_level, String ch, String rs_offset_value, String rs_offset, String rs_layers, String rs_is_reading) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("user_id", userId);
+        values.put("back_site_reading", back_site_reading);
+        values.put("fore_site_reading", fore_site_reading);
+        values.put("remarks", remarks);
+        values.put("ls_offset_value", ls_offset_value);
+        values.put("ls_offset", ls_offset);
+        values.put("ls_layers", ls_layers);
+        values.put("ls_is_reading", ls_is_reading);
+        values.put("ls_reduce_level", ls_reduce_level);
+        values.put("ch", ch);
+        values.put("rs_offset_value", rs_offset_value);
+        values.put("rs_offset", rs_offset);
+        values.put("rs_layers", rs_layers);
+        values.put("rs_is_reading", rs_is_reading);
+        // Inserting Row
+        long latId = db.insert(TABLE_BOOK_LEVEL, null, values);
+        db.close(); // Closing database connection
+
+        return latId;
+    }
+
+    public JSONArray getBookLevel(String id){
+        String selectQuery= "SELECT * FROM " + TABLE_BOOK_LEVEL + " WHERE user_id = " + id ;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray previousArray = new JSONArray();
+        if(cursor.moveToFirst()) {
+            JSONObject prev = new JSONObject();
+            try {
+                prev.put("id", cursor.getString(0));
+                prev.put("user_id", cursor.getString(1));
+                prev.put("back_site_reading", cursor.getString(2));
+                prev.put("fore_site_reading", cursor.getString(3));
+                prev.put("remarks", cursor.getString(4));
+                prev.put("ls_offset_value", cursor.getString(5));
+                prev.put("ls_offset", cursor.getString(6));
+                prev.put("ls_layers", cursor.getString(7));
+                prev.put("ls_is_reading", cursor.getString(8));
+                prev.put("ls_reduce_level", cursor.getString(9));
+                prev.put("ch", cursor.getString(10));
+                prev.put("rs_offset_value", cursor.getString(11));
+                prev.put("rs_offset", cursor.getString(12));
+                prev.put("rs_layers", cursor.getString(13));
+                prev.put("rs_is_reading", cursor.getString(14));
+                previousArray.put(prev);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        cursor.close();
+        return previousArray;
+    }
+
+    public JSONArray getLastBookLevel(String id){
+        String selectQuery= "SELECT * FROM " + TABLE_BOOK_LEVEL + " WHERE user_id = " + id + " ORDER BY id DESC LIMIT 1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray previousArray = new JSONArray();
+        if(cursor.moveToFirst()) {
+            JSONObject prev = new JSONObject();
+            try {
+                prev.put("id", cursor.getString(0));
+                prev.put("user_id", cursor.getString(1));
+                prev.put("back_site_reading", cursor.getString(2));
+                prev.put("fore_site_reading", cursor.getString(3));
+                prev.put("remarks", cursor.getString(4));
+                prev.put("ls_offset_value", cursor.getString(5));
+                prev.put("ls_offset", cursor.getString(6));
+                prev.put("ls_layers", cursor.getString(7));
+                prev.put("ls_is_reading", cursor.getString(8));
+                prev.put("ls_reduce_level", cursor.getString(9));
+                prev.put("ch", cursor.getString(10));
+                prev.put("rs_offset_value", cursor.getString(11));
+                prev.put("rs_offset", cursor.getString(12));
+                prev.put("rs_layers", cursor.getString(13));
+                prev.put("rs_is_reading", cursor.getString(14));
+                previousArray.put(prev);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        cursor.close();
+        return previousArray;
+    }
+
+    public JSONArray getAllBookLevel(String id ) {
+        String selectQuery = "SELECT * FROM " + TABLE_BOOK_LEVEL + " WHERE user_id = " + id ;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        JSONArray booksArray = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject prev = new JSONObject();
+                try {
+                    prev.put("id", cursor.getString(0));
+                    prev.put("user_id", cursor.getString(1));
+                    prev.put("back_site_reading", cursor.getString(2));
+                    prev.put("fore_site_reading", cursor.getString(3));
+                    prev.put("remarks", cursor.getString(4));
+                    prev.put("ls_offset_value", cursor.getString(5));
+                    prev.put("ls_offset", cursor.getString(6));
+                    prev.put("ls_layers", cursor.getString(7));
+                    prev.put("ls_is_reading", cursor.getString(8));
+                    prev.put("ls_reduce_level", cursor.getString(9));
+                    prev.put("ch", cursor.getString(10));
+                    prev.put("rs_offset_value", cursor.getString(11));
+                    prev.put("rs_offset", cursor.getString(12));
+                    prev.put("rs_layers", cursor.getString(13));
+                    prev.put("rs_is_reading", cursor.getString(14));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                booksArray.put(prev);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return booksArray;
+    }
+
+
+    public void deleteBooklevelById(String userId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ TABLE_BOOK_LEVEL +" WHERE user_id ="+ userId);
+    }
     public List<Equipments> getAllEquipments() {
         List<Equipments> equipmentList = new ArrayList<Equipments>();
         // Select All Query

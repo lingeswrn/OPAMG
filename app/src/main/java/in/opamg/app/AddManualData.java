@@ -2,6 +2,7 @@ package in.opamg.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,13 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
+import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,8 +51,8 @@ import in.opamg.app.Models.Measurement;
 public class AddManualData extends AppCompatActivity {
     DatabaseHandler db;
     Button add, done;
-    EditText chainage, offset, is_reading, remarks;
-    AutoCompleteTextView search_layers;
+    EditText chainage, offset, is_reading, remarks, search_layers;
+//    AutoCompleteTextView search_layers;
     Double getChainage, getOffset, getISReadings, getTBM_RL;
     String getStrChainage, getStrOffset, getStrISReadings, getRemarks, getLayer, projectId, measurementId, mappingCh;
     ListView lstText;
@@ -74,9 +82,85 @@ public class AddManualData extends AppCompatActivity {
         offset = (EditText) findViewById(R.id.offset);
         is_reading = (EditText) findViewById(R.id.is_reading);
         remarks = (EditText) findViewById(R.id.remarks);
-        search_layers = (AutoCompleteTextView) findViewById(R.id.search_layers);
+        search_layers = (EditText) findViewById(R.id.search_layers);
         lstText = (ListView) findViewById(R.id.lstText);
         final UTM2LatLon test = new UTM2LatLon();
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+//                new DataPoint(0, 1),
+//                new DataPoint(1, 5),
+//                new DataPoint(2, 3),
+//                new DataPoint(3, 2),
+//                new DataPoint(4, 6),
+
+                new DataPoint(0, 1),
+                new DataPoint(1, 1),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, -1),
+                new DataPoint(5, -1),
+                new DataPoint(6, -1),
+                new DataPoint(7, 2),
+                new DataPoint(8, 5),
+                new DataPoint(9, 4),
+                new DataPoint(10, 1)
+        });
+
+
+        series.setTitle("Random Curve 1");
+        series.setColor(R.color.colorAccent);
+        series.setDrawDataPoints(true);
+//        series.setDataPointsRadius(10);
+//        series.setThickness(8);
+
+        series.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+//                Toast.makeText(AddManualData.this, "Series1: On Data Point clicked: "+dataPoint, Toast.LENGTH_SHORT).show();
+                String point = String.valueOf(dataPoint);
+                String layer = null;
+                Log.e("val", String.valueOf(dataPoint));
+                if(point.equalsIgnoreCase("[1.0/1.0]")){
+                    layer = "NGL";
+                }else if(point.equalsIgnoreCase("[2.0/3.0]")){
+                    layer = "SPOIL BANK TOP";
+                }else if(point.equalsIgnoreCase("[3.0/2.0]")){
+                    layer = "BERM";
+                }else if(point.equalsIgnoreCase("[4.0/-1.0]")){
+                    layer = "CB";
+                }else if(point.equalsIgnoreCase("[5.0/-1.0]")){
+                    layer = "CL";
+                }else if(point.equalsIgnoreCase("[6.0/-1.0]")){
+                    layer = "CB";
+                }else if(point.equalsIgnoreCase("[7.0/2.0]")){
+                    layer = "BERM";
+                }else if(point.equalsIgnoreCase("[8.0/5.0]")){
+                    layer = "DOWEL";
+                }else if(point.equalsIgnoreCase("[9.0/4.0]")){
+                    layer = "SERVICE ROAD";
+                }else if(point.equalsIgnoreCase("[10.0/1.0]")){
+                    layer = "NGL";
+                }
+
+                search_layers.setText(layer);
+            }
+        });
+// set manual X bounds
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(10);
+
+// set manual Y bounds
+        graph.getViewport().setYAxisBoundsManual(true);
+        graph.getViewport().setMinY(-2);
+        graph.getViewport().setMaxY(6);
+        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+
+        GridLabelRenderer gridLabel = graph.getGridLabelRenderer();
+        gridLabel.setHorizontalLabelsVisible(false);
+        gridLabel.setVerticalLabelsVisible(false);
+        graph.addSeries(series);
 
         chainage.setText(mappingCh);
         add.setOnClickListener(new View.OnClickListener() {
@@ -187,7 +271,9 @@ public class AddManualData extends AppCompatActivity {
                             Double ManbsOffsetMean, ManfsOffsetMean, ManisOffsetMean, manrisePlus, manfallMinus, manchByAutoLevel, mancheckedReduceLevel;
                             Double manreduceLevel, manheightOfInstrument, manavgHeightOfInstrument;
                             Double tempEasting;
-                            JSONArray intermediatesite = new JSONArray();
+//                            JSONArray intermediatesite = new JSONArray();
+                            ArrayList<String> intermediatesite = new ArrayList<String>();
+
                             JSONArray backsite = new JSONArray();
                             JSONArray foresite = new JSONArray();
                             JSONArray tempArray = new JSONArray();
@@ -212,7 +298,7 @@ public class AddManualData extends AppCompatActivity {
                             manualLastNorthing = first_half / temp4;
                             Log.e("manualLastNorthing", String.valueOf(manualLastNorthing));
 
-                            intermediatesite.put(allCookiee.getJSONObject(i).getString("is_reading"));
+                            intermediatesite.add(allCookiee.getJSONObject(i).getString("is_reading"));
                             backsite.put("");
                             foresite.put("");
 
@@ -329,9 +415,11 @@ public class AddManualData extends AppCompatActivity {
                             Double manMeasurementCH = calMeasurementCH( manprevious_measurment_ch , manxSection, manlSection);
                             int id = Integer.parseInt(Variables.PROJECT_ID);
                             int equ = Integer.parseInt(previosDataJSON.getString("equipement_id"));
-                            String layer = previosDataJSON.getString("layer_code");
+//                            String layer = previosDataJSON.getString("layer_code");
+                            Log.e("single", String.valueOf(allCookiee.getJSONObject(i)));
+                            String layer = allCookiee.getJSONObject(i).getString("layer");
                             String manel = "";
-
+                            Log.e("layer", layer);
                             //JSONArray latlng = UTMtoGeog(String.valueOf(man_cs_offset_easting), String.valueOf(man_cs_offset_northing),previosDataJSON.getString("utm_zone") );
                             String str = previosDataJSON.getString("utm_zone") + "P "+ man_cs_offset_eastingForCal + " " + man_cs_offset_northingForCal;
                             double[] result = test.convertUTMToLatLong(str);
@@ -349,8 +437,9 @@ public class AddManualData extends AppCompatActivity {
                                     "", "", "", "", "", "", "", "C", 1, currentDateTimeString));
 
 
+                            Object[] intermediatesiteArray = intermediatesite.toArray();
                             String concatBackSite = backsite.getString(0);
-                            String concatInterSite = intermediatesite.getString(0);
+                            String concatInterSite = (String) intermediatesiteArray[0];
                             String concatForeSite = foresite.getString(0);
 
                             int readingId = db.addStaffReadings(lastId, concatBackSite, concatInterSite, concatForeSite);
@@ -424,11 +513,11 @@ public class AddManualData extends AppCompatActivity {
     }
 
     private void layerSetAdapter(String[] languages) {
-        ArrayAdapter adapter = new
-                ArrayAdapter(this,android.R.layout.simple_list_item_1,languages);
-
-        search_layers.setAdapter(adapter);
-        search_layers.setThreshold(1);
+//        ArrayAdapter adapter = new
+//                ArrayAdapter(this,android.R.layout.simple_list_item_1,languages);
+//
+//        search_layers.setAdapter(adapter);
+//        search_layers.setThreshold(1);
     }
 
     public class CookieListing extends BaseAdapter {
@@ -499,69 +588,56 @@ public class AddManualData extends AppCompatActivity {
         }
     }
 
-    public Double calSiteOffset(JSONArray backsite) {
+    public Double calSiteOffset(ArrayList<String> backsite) {
         Double returnValue = 0.000;
+        Object[] mStringArray = backsite.toArray();
         if(previousDataLength == 0){
-            if(backsite.length() > 1){
-                try {
-                    if( Double.valueOf(backsite.getString(0)) > 0 && Double.valueOf(backsite.getString(2)) > 0){
-                        try {
-                            returnValue = Double.parseDouble(backsite.getString(0)) - Double.parseDouble(backsite.getString(2));
-                            returnValue = returnValue * 100;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }else {
-                        returnValue = 0.000;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            if(mStringArray.length > 1){
+                if( Double.valueOf((String) mStringArray[0]) > 0 && Double.valueOf((String) mStringArray[2]) > 0){
+                    returnValue = Double.parseDouble((String) mStringArray[0]) - Double.parseDouble((String) mStringArray[2]);
+                    returnValue = returnValue * 100;
+                }else {
+                    returnValue = 0.000;
                 }
             }else {
-                try {
-                    returnValue = Double.valueOf(backsite.getString(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(mStringArray.length > 0) {
+                    returnValue = Double.valueOf((String) mStringArray[0]);
+                }else {
+                    returnValue = 0.000;
                 }
             }
         }else {
-            if(backsite.length() > 1){
-                try {
-                    returnValue = Double.parseDouble(backsite.getString(0)) - Double.parseDouble(backsite.getString(2));
-                    returnValue = returnValue * 100;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            if(mStringArray.length > 1){
+                returnValue = Double.parseDouble((String) mStringArray[0]) - Double.parseDouble((String) mStringArray[2]);
+                returnValue = returnValue * 100;
             }else {
-                try {
-                    returnValue = Double.valueOf(backsite.getString(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(mStringArray.length > 0) {
+                    returnValue = Double.valueOf((String) mStringArray[0]);
+                }else {
+                    returnValue = 0.000;
                 }
             }
         }
         return Double.parseDouble(String.format("%.3f", returnValue));
     }
 
-    public JSONArray calSiteOffsetSumMean(JSONArray dataInput){
+    public JSONArray calSiteOffsetSumMean(ArrayList<String> dataInput){
         JSONArray returnValue = new JSONArray();
         Double sum = 0.000;
         Double mean = 0.000;
-        if(dataInput.length() > 1){
-            for (int i = 0; i < dataInput.length(); i++){
-                try {
-                    sum = sum + Double.parseDouble(dataInput.getString(i));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        Object[] mStringArray = dataInput.toArray();
+        if(mStringArray.length > 1){
+            for (int i = 0; i < mStringArray.length; i++){
+                sum = sum + Double.parseDouble((String) mStringArray[i]);
             }
-            mean = sum / dataInput.length();
+            mean = sum / mStringArray.length;
         }else {
-            try {
-                sum = Double.parseDouble(dataInput.getString(0));
-                mean = Double.parseDouble(dataInput.getString(0));
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(mStringArray.length > 0){
+                sum = Double.parseDouble((String) mStringArray[0]);
+                mean = Double.parseDouble((String) mStringArray[0]);
+            }else {
+                sum = 0.000;
+                mean = 0.000;
             }
         }
         try {

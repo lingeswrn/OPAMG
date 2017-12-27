@@ -258,6 +258,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
         }
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerDragListener(this);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
@@ -282,7 +283,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             public void onMapClick(LatLng point) {
                 if( markerCheck ){
                     MarkerOptions markerOptions = new MarkerOptions();
-                    float zoomLevel = (float) 18.00;
+                    float zoomLevel = (float) 19.00;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoomLevel));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
                     markerOptions.position(point);
@@ -412,6 +413,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, O
             try {
                 Log.e("id", allIds.getString(i));
                 all = db.getAllMeasurementByProjectId( allIds.getString(i));
+                Log.e("all", String.valueOf(all));
                 fullData.put(all);
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -51,7 +51,9 @@
             android:label="@string/title_activity_add_measurement" />
         <activity android:name=".AddMeasurement" />
         <activity android:name=".AddManualData" />
-        <activity android:name=".MeasurementDetails"></activity>
+        <activity android:name=".MeasurementDetails" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".BookLevel"></activity>
     </application>
 
 </manifest>

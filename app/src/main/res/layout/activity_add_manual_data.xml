@@ -71,13 +71,19 @@
                     android:id="@+id/is_reading"
                     android:layout_weight="2"
                     android:inputType="text"/>
-                <AutoCompleteTextView
-                    android:id="@+id/search_layers"
+                <!--<AutoCompleteTextView-->
+                    <!--android:id="@+id/search_layers"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:hint="@string/search_layers"-->
+                    <!--android:layout_weight="2">-->
+                <!--</AutoCompleteTextView>-->
+                <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/search_layers"
-                    android:layout_weight="2">
-                </AutoCompleteTextView>
+                    android:id="@+id/search_layers"
+                    android:layout_weight="2"
+                    android:hint="@string/search_layers"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,6 +95,10 @@
                     android:id="@+id/remarks"
                     android:layout_weight="2"/>
             </LinearLayout>
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="match_parent"
+                android:layout_height="200dip"
+                android:id="@+id/graph" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

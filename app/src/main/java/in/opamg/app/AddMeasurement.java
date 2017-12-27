@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -395,35 +394,38 @@ public class AddMeasurement extends AppCompatActivity {
     }
 
     private void calCoreCal() {
-        JSONArray backsite = new JSONArray();
+        /*JSONArray backsite = new JSONArray();
         JSONArray intermediatesite = new JSONArray();
-        JSONArray foresite = new JSONArray();
+        JSONArray foresite = new JSONArray();*/
+//        String[] backsite = new String[] {};
+        ArrayList<String> backsite = new ArrayList<String>();
+        ArrayList<String> intermediatesite = new ArrayList<String>();
+        ArrayList<String> foresite = new ArrayList<String>();
 
         if (!getBackSite.equalsIgnoreCase(""))
-            backsite.put(getBackSite);
+            backsite.add(getBackSite);
         if (!getBackSite1.equalsIgnoreCase(""))
-            backsite.put(getBackSite1);
+            backsite.add(getBackSite1);
         if (!getBackSite2.equalsIgnoreCase(""))
-            backsite.put(getBackSite2);
+            backsite.add(getBackSite2);
 
         if (!getIntermediateSite.equalsIgnoreCase(""))
-            intermediatesite.put(getIntermediateSite);
+            intermediatesite.add(getIntermediateSite);
         if (!getIntermediateSite1.equalsIgnoreCase(""))
-            intermediatesite.put(getIntermediateSite1);
+            intermediatesite.add(getIntermediateSite1);
         if (!getIntermediateSite2.equalsIgnoreCase(""))
-            intermediatesite.put(getIntermediateSite2);
+            intermediatesite.add(getIntermediateSite2);
 
         if (!getForwardSite.equalsIgnoreCase(""))
-            foresite.put(getForwardSite);
+            foresite.add(getForwardSite);
         if (!getForwardSite1.equalsIgnoreCase(""))
-            foresite.put(getForwardSite1);
+            foresite.add(getForwardSite1);
         if (!getForwardSite2.equalsIgnoreCase(""))
-            foresite.put(getForwardSite2);
+            foresite.add(getForwardSite2);
 
         bsoffset = calSiteOffset(backsite);
         isoffset = calSiteOffset(intermediatesite);
         fsoffset = calSiteOffset(foresite);
-
 
         JSONArray bsSumMean = calSiteOffsetSumMean(backsite);
         JSONArray isSumMean = calSiteOffsetSumMean(intermediatesite);
@@ -444,12 +446,6 @@ public class AddMeasurement extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("BS Offset Sum", String.valueOf(bsOffsetSum));
-        Log.e("BS Offset mean", String.valueOf(bsOffsetMean));
-        Log.e("IS Offset Sum", String.valueOf(isOffsetSum));
-        Log.e("IS Offset mean", String.valueOf(isOffsetMean));
-        Log.e("FS Offset Sum", String.valueOf(fsOffsetSum));
-        Log.e("FS Offset mean", String.valueOf(fsOffsetMean));
 
         JSONArray bsRiseFall = calRiseFall(bsOffsetMean, fsOffsetMean);
         risePlus = 0.000;
@@ -475,10 +471,6 @@ public class AddMeasurement extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("Previous ch auto level", String.valueOf(previous_ch_by_auto_level));
-        Log.e("Previous hight", String.valueOf(previous_hight_of_instrument));
-        Log.e("Previous easting", String.valueOf(previous_utm_easting));
-        Log.e("Previous northing", String.valueOf(previous_utm_northing));
 
         chByAutoLevel = calChByAutoLevel(previous_ch_by_auto_level, bsoffset, fsoffset);
         checkedReduceLevel = calCheckedReduceLevel(previous_hight_of_instrument, isOffsetMean, fsOffsetMean);
@@ -502,43 +494,7 @@ public class AddMeasurement extends AppCompatActivity {
         String layer [] = getLayer.split ("--");
         getLayer = layer[0];
 
-        Log.e("ProjectId", String.valueOf(ProjectId));
-        Log.e("equipmentId", String.valueOf(getEquipmentId));
-        Log.e("lattitude", String.valueOf(Latitude));
-        Log.e("Lat DMS", String.valueOf(getLatDMS));
-        Log.e("Long DMS", String.valueOf(getLongDMS));
-        Log.e("longitude", String.valueOf(Longitude));
-        Log.e("getLayer", String.valueOf(getLayer));
-        Log.e("utm_zone", String.valueOf(getZone));
-        Log.e("utm_easting", String.valueOf(getEasting));
-        Log.e("utm_northing", String.valueOf(getNorthing));
-        Log.e("angleRedians", String.valueOf(angleRedians));
-        Log.e("cs_offset_e", String.valueOf(cs_offset_easting));
-        Log.e("cs_offset_n", String.valueOf(cs_offset_northing));
-        Log.e("el", String.valueOf(getEL));
-        Log.e("mapping_ch", String.valueOf(getMappingCh));
-        Log.e("chByAutoLevel", String.valueOf(chByAutoLevel));
-        Log.e("measurment_ch", String.valueOf(getMeasurementCh));
-        Log.e("gps_offset_length", String.valueOf(getGPSOffsetLength));
-        Log.e("BS Offset", String.valueOf(bsoffset));
-        Log.e("IS Offset", String.valueOf(isoffset));
-        Log.e("FS Offset", String.valueOf(fsoffset));
-        Log.e("n_offset", String.valueOf(getNOffset));
-        Log.e("e_offset", String.valueOf(getEOffset));
-        Log.e("l_section_offset", String.valueOf(getLSection));
-        Log.e("x_section_offset", String.valueOf(getXSection));
-        Log.e("Rise Plus", String.valueOf(risePlus));
-        Log.e("Fall Minus", String.valueOf(fallMinus));
-        Log.e("avgHeightOfInstrument", String.valueOf(avgHeightOfInstrument));
-        Log.e("heightOfInstrument", String.valueOf(heightOfInstrument));
-        Log.e("calculated_reduce_rl", String.valueOf(reduceLevel));
-        Log.e("checked_reduce_level", String.valueOf(checkedReduceLevel));
-        Log.e("remarks", String.valueOf(getRemarks));
-        Log.e("adj_rl", String.valueOf(getADJRl));
-        Log.e("adjustmentError", String.valueOf(adjustmentError));
-        Log.e("tbm_rl", String.valueOf(getTBM_RL));
-        Log.e("bs_angle", String.valueOf(getBSAngle));
-        Log.e("fs_angle", String.valueOf(getFSAngle));
+
         String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
 // textView is the TextView view that should display it
@@ -559,37 +515,48 @@ public class AddMeasurement extends AppCompatActivity {
         int coordinate2 = db.addCoOrdinates(lastId, "lng", longDMSArray[0], longDMSArray[1], longDMSArray[2]);
 
         String concatBackSite = "", concatInterSite = "", concatForeSite = "";
-        if( backsite.length() > 1 ||  intermediatesite.length() > 1 ||  foresite.length() > 1 ){
-            try {
+        Object[] backsiteArray = backsite.toArray();
+        Object[] intermediatesiteArray = intermediatesite.toArray();
+        Object[] foresiteArray = foresite.toArray();
+        if( backsiteArray.length > 1 ||  intermediatesiteArray.length > 1 ||  foresiteArray.length > 1 ){
 
-                if( backsite.length() > 1)
-                    concatBackSite = backsite.getString(0) + "," + backsite.getString(1) + "," + backsite.getString(2);
-                else
-                    concatBackSite = ",,,";
-                if( intermediatesite.length() > 1 )
-                    concatInterSite = intermediatesite.getString(0) + "," + intermediatesite.getString(1) + "," + intermediatesite.getString(2);
-                else
-                    concatInterSite = ",,,";
+            if(  backsiteArray.length > 1)
+                concatBackSite = backsiteArray[0] + "," + backsiteArray[1] + "," + backsiteArray[2];
+            else
+                concatBackSite = ",,,";
+            if( intermediatesiteArray.length > 1 )
+                concatInterSite = intermediatesiteArray[0] + "," + intermediatesiteArray[1] + "," + intermediatesiteArray[2];
+            else
+                concatInterSite = ",,,";
 
-                if( foresite.length() > 1)
-                    concatForeSite = foresite.getString(0) + "," + foresite.getString(1) + "," + foresite.getString(2);
-                else
-                    concatForeSite = ",,,";
+            if( foresiteArray.length > 1)
+                concatForeSite = foresiteArray[0] + "," + foresiteArray[1] + "," + foresiteArray[2];
+            else
+                concatForeSite = ",,,";
 
-            } catch (JSONException e) {
-
-                e.printStackTrace();
-            }
         }else {
-            try {
-                concatBackSite = backsite.getString(0);
-                concatInterSite = intermediatesite.getString(0);
-                concatForeSite = foresite.getString(0);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            concatBackSite = "";
+            concatInterSite = "";
+            concatForeSite = "";
+
+            if( backsiteArray.length > 0 ) {
+                concatBackSite = (String) backsiteArray[0];
+                concatInterSite = "";
+                concatForeSite = "";
+            }
+
+            if( intermediatesiteArray.length > 0 ) {
+                concatBackSite = "";
+                concatInterSite = (String) intermediatesiteArray[0];
+                concatForeSite = "";
+            }
+
+            if( foresiteArray.length > 0 ) {
+                concatBackSite = "";
+                concatInterSite = "";
+                concatForeSite = (String) foresiteArray[0];
             }
         }
-
         int readingId = db.addStaffReadings(lastId, concatBackSite, concatInterSite, concatForeSite);
 
         if( lastId > 0 && coordinate1 > 0 && coordinate2 > 0 && readingId > 0){
@@ -624,69 +591,56 @@ public class AddMeasurement extends AppCompatActivity {
         return Double.parseDouble(String.format("%.3f", returnValue));
     }
 
-    public Double calSiteOffset(JSONArray backsite) {
+    public Double calSiteOffset(ArrayList<String> backsite) {
         Double returnValue = 0.000;
+        Object[] mStringArray = backsite.toArray();
         if(previousDataLength == 0){
-            if(backsite.length() > 1){
-                try {
-                    if( Double.valueOf(backsite.getString(0)) > 0 && Double.valueOf(backsite.getString(2)) > 0){
-                        try {
-                            returnValue = Double.parseDouble(backsite.getString(0)) - Double.parseDouble(backsite.getString(2));
-                            returnValue = returnValue * 100;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }else {
-                        returnValue = 0.000;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            if(mStringArray.length > 1){
+                if( Double.valueOf((String) mStringArray[0]) > 0 && Double.valueOf((String) mStringArray[2]) > 0){
+                    returnValue = Double.parseDouble((String) mStringArray[0]) - Double.parseDouble((String) mStringArray[2]);
+                    returnValue = returnValue * 100;
+                }else {
+                    returnValue = 0.000;
                 }
             }else {
-                try {
-                    returnValue = Double.valueOf(backsite.getString(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(mStringArray.length > 0) {
+                    returnValue = Double.valueOf((String) mStringArray[0]);
+                }else {
+                    returnValue = 0.000;
                 }
             }
         }else {
-            if(backsite.length() > 1){
-                try {
-                    returnValue = Double.parseDouble(backsite.getString(0)) - Double.parseDouble(backsite.getString(2));
-                    returnValue = returnValue * 100;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            if(mStringArray.length > 1){
+                returnValue = Double.parseDouble((String) mStringArray[0]) - Double.parseDouble((String) mStringArray[2]);
+                returnValue = returnValue * 100;
             }else {
-                try {
-                    returnValue = Double.valueOf(backsite.getString(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(mStringArray.length > 0) {
+                    returnValue = Double.valueOf((String) mStringArray[0]);
+                }else {
+                    returnValue = 0.000;
                 }
             }
         }
         return Double.parseDouble(String.format("%.3f", returnValue));
     }
 
-    public JSONArray calSiteOffsetSumMean(JSONArray dataInput){
+    public JSONArray calSiteOffsetSumMean(ArrayList<String> dataInput){
         JSONArray returnValue = new JSONArray();
         Double sum = 0.000;
         Double mean = 0.000;
-        if(dataInput.length() > 1){
-            for (int i = 0; i < dataInput.length(); i++){
-                try {
-                    sum = sum + Double.parseDouble(dataInput.getString(i));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        Object[] mStringArray = dataInput.toArray();
+        if(mStringArray.length > 1){
+            for (int i = 0; i < mStringArray.length; i++){
+                sum = sum + Double.parseDouble((String) mStringArray[i]);
             }
-            mean = sum / dataInput.length();
+            mean = sum / mStringArray.length;
         }else {
-            try {
-                sum = Double.parseDouble(dataInput.getString(0));
-                mean = Double.parseDouble(dataInput.getString(0));
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(mStringArray.length > 0){
+                sum = Double.parseDouble((String) mStringArray[0]);
+                mean = Double.parseDouble((String) mStringArray[0]);
+            }else {
+                sum = 0.000;
+                mean = 0.000;
             }
         }
         try {
